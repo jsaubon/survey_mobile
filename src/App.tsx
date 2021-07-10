@@ -42,7 +42,7 @@ import "./theme/variables.css";
 import Home from "./pages/Home/Home";
 import Application from "./pages/Application/Application";
 import Support from "./pages/Support/Support";
-import "antd-mobile/dist/antd-mobile.css"; // or 'antd-mobile/dist/antd-mobile.less'
+import "antd/dist/antd.css"; // or 'antd/dist/antd.less'
 const App: React.FC = () => (
 	<IonApp>
 		<IonReactRouter>
