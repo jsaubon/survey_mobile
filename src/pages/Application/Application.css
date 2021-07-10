@@ -12,3 +12,7 @@
 .list-md {
 	background: transparent;
 }
+
+.swiper-container {
+	height: 100%;
+}
