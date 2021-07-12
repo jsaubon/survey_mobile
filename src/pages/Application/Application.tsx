@@ -17,7 +17,7 @@ import {
 } from "@ionic/react";
 import "./Application.css";
 import { useEffect, useRef, useState } from "react";
-import { Steps, Carousel, Card, Button, message } from "antd";
+import { Steps, Carousel, Card, Button, message, Divider } from "antd";
 import Text from "antd/lib/typography/Text";
 import Title from "antd/lib/typography/Title";
 const Step = Steps.Step;
@@ -44,7 +44,11 @@ const Application = () => {
 						Doloremque, optio? Waiver Lorem ipsum dolor sit amet consectetur
 						adipisicing elit. Eius temporibus possimus illo vero provident
 						perspiciatis laudantium eaque ea natus soluta, impedit at error. Error
-						distinctio optio excepturi impedit? Doloremque, optio?
+						distinctio optio excepturi impedit? Doloremque, option?
+						<Divider />
+						{/* <Button type="primary" onClick={() => next()} }>
+							Accept
+						</Button> */}
 					</Text>
 				</>
 			),
@@ -88,7 +92,7 @@ const Application = () => {
 					</Steps>
 					<div className="steps-content">{steps[current].content}</div>
 					<div className="steps-action">
-						{current < steps.length - 1 && (
+						{current == 1 && current < steps.length - 1 && (
 							<Button type="primary" onClick={() => next()}>
 								Next
 							</Button>
