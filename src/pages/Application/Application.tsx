@@ -46,6 +46,9 @@ const Application = () => {
 						perspiciatis laudantium eaque ea natus soluta, impedit at error. Error
 						distinctio optio excepturi impedit? Doloremque, option?
 						<Divider />
+						{/* <Button type="primary" onClick={() => next()} }>
+							Accept
+						</Button> */}
 					</Text>
 				</>
 			),

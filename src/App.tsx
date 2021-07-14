@@ -17,9 +17,6 @@ import {
 	folderOutline,
 	helpCircleOutline,
 } from "ionicons/icons";
-import Tab1 from "./pages/Tab1";
-import Tab2 from "./pages/Tab2";
-import Tab3 from "./pages/Tab3";
 
 /* Core CSS required for Ionic components to work properly */
 import "@ionic/react/css/core.css";
@@ -42,6 +39,8 @@ import "./theme/variables.css";
 import Home from "./pages/Home/Home";
 import Application from "./pages/Application/Application";
 import Support from "./pages/Support/Support";
+import Others from "./pages/Others/Others";
+import Surveys from "./pages/Others/Surveys/Surveys";
 import "antd/dist/antd.css"; // or 'antd/dist/antd.less'
 const App: React.FC = () => (
 	<IonApp>
@@ -54,8 +53,14 @@ const App: React.FC = () => (
 					<Route exact path="/application">
 						<Application />
 					</Route>
-					<Route path="/support">
+					<Route exact path="/support">
 						<Support />
+					</Route>
+					<Route exact path="/others/surveys">
+						<Surveys />
+					</Route>
+					<Route exact path="/others">
+						<Others />
 					</Route>
 					<Route exact path="/">
 						<Redirect to="/home" />
@@ -73,6 +78,9 @@ const App: React.FC = () => (
 					<IonTabButton tab="support" href="/support">
 						<IonIcon icon={helpCircleOutline} />
 						<IonLabel>Support</IonLabel>
+					</IonTabButton>
+					<IonTabButton tab="others" href="/others">
+						<IonLabel>Others</IonLabel>
 					</IonTabButton>
 				</IonTabBar>
 			</IonTabs>

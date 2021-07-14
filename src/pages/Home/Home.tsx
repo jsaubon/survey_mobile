@@ -12,7 +12,8 @@ import {
 } from "@ionic/react";
 import { newspaperOutline } from "ionicons/icons";
 import "./Home.css";
-import { Carousel } from "antd";
+import { Carousel, List } from "antd";
+import Text from "antd/lib/typography/Text";
 
 const Home = () => {
 	const slideOpts = {
@@ -114,6 +115,62 @@ const Home = () => {
 						<IonIcon icon={newspaperOutline} className="newsandannouncements_icon" />
 						News and Announcements
 					</h1>
+					<List bordered>
+						<List.Item>
+							<Text>
+								Lorem ipsum dolor sit, amet consectetur adipisicing elit. Fugit iure
+								explicab
+							</Text>
+						</List.Item>
+						<List.Item>
+							<Text>
+								Lorem ipsum dolor sit, amet consectetur adipisicing elit. Fugit iure
+								explicab
+							</Text>
+						</List.Item>
+						<List.Item>
+							<Text>
+								Lorem ipsum dolor sit, amet consectetur adipisicing elit. Fugit iure
+								explicab
+							</Text>
+						</List.Item>
+						<List.Item>
+							<Text>
+								Lorem ipsum dolor sit, amet consectetur adipisicing elit. Fugit iure
+								explicab
+							</Text>
+						</List.Item>
+						<List.Item>
+							<Text>
+								Lorem ipsum dolor sit, amet consectetur adipisicing elit. Fugit iure
+								explicab
+							</Text>
+						</List.Item>
+						<List.Item>
+							<Text>
+								Lorem ipsum dolor sit, amet consectetur adipisicing elit. Fugit iure
+								explicab
+							</Text>
+						</List.Item>
+						<List.Item>
+							<Text>
+								Lorem ipsum dolor sit, amet consectetur adipisicing elit. Fugit iure
+								explicab
+							</Text>
+						</List.Item>
+						<List.Item>
+							<Text>
+								Lorem ipsum dolor sit, amet consectetur adipisicing elit. Fugit iure
+								explicab
+							</Text>
+						</List.Item>
+						<List.Item>
+							<Text>
+								Lorem ipsum dolor sit, amet consectetur adipisicing elit. Fugit iure
+								explicab
+							</Text>
+						</List.Item>
+					</List>
 				</div>
 			</IonContent>
 		</IonPage>
