@@ -46,7 +46,7 @@ const SurveyModal: React.FC<surverProps> = ({
 
 	return (
 		<IonModal isOpen={showSurveyModal.show}>
-			<div className="container">
+			<div className="container" style={{ overflowY: "auto" }}>
 				<Card
 					title={showSurveyModal.data && showSurveyModal.data.form_type}
 					extra={

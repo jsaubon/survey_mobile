@@ -9,7 +9,7 @@ import {
 	IonModal,
 	IonButton,
 } from "@ionic/react";
-import { Button, List } from "antd";
+import { Button, List, message } from "antd";
 import "./Surveys.css";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import axios from "axios";
@@ -37,6 +37,11 @@ const Surveys = () => {
 			refetchOnWindowFocus: false,
 			onSuccess: (res) => {
 				console.log("res", res);
+				message.success("success");
+			},
+			onError: (err) => {
+				console.log(err);
+				message.success(JSON.stringify(err));
 			},
 		}
 	);
