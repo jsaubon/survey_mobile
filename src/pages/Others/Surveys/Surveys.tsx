@@ -15,10 +15,12 @@ import { useMutation, useQuery, useQueryClient } from "react-query";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import SurveyModal from "./SurveyModal";
+import getApiUrl from "../../../providers/getApiUrl";
+import getApiKey from "../../../providers/getApiKey";
 
 const Surveys = () => {
-	let apiUrl = "http://dost.test/api/mobile";
-	let api_key = "ZhtLwWWHGdxzt0JDlX2H6CepXQnZjRGEShf64Q8iQ8UKc2uJDL1qwLj9vcsZ";
+	let apiUrl = getApiUrl();
+	let api_key = getApiKey();
 	const { data: dataSurveys, isLoading: isLoadingSurveys } = useQuery(
 		"surveys",
 		() =>
@@ -34,7 +36,7 @@ const Surveys = () => {
 			retryDelay: 500,
 			refetchOnWindowFocus: false,
 			onSuccess: (res) => {
-				console.log(res);
+				console.log("res", res);
 			},
 		}
 	);
@@ -68,6 +70,7 @@ const Surveys = () => {
 				<div className="container">
 					<List bordered>
 						{dataSurveys &&
+							dataSurveys.data &&
 							dataSurveys.data.map((survey: any, key: any) => {
 								return (
 									<List.Item key={key}>
