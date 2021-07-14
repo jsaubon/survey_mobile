@@ -1,0 +1,7 @@
+{
+  "name": "dost-mobile",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "react"
+}
