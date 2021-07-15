@@ -1,5 +1,4 @@
- export default function getApiUrl() {
-	let apiUrl = "http://9db6c511e8a6.ngrok.io/api/mobile";
-	return apiUrl;
-};
-
+export default function getApiUrl() {
+  let apiUrl = "http://127.0.0.1:8000/api/mobile";
+  return apiUrl;
+}

@@ -1,21 +1,21 @@
 import { Redirect, Route } from "react-router-dom";
 import {
-	IonApp,
-	IonIcon,
-	IonLabel,
-	IonRouterOutlet,
-	IonTabBar,
-	IonTabButton,
-	IonTabs,
+  IonApp,
+  IonIcon,
+  IonLabel,
+  IonRouterOutlet,
+  IonTabBar,
+  IonTabButton,
+  IonTabs,
 } from "@ionic/react";
 import { IonReactRouter } from "@ionic/react-router";
 import {
-	ellipse,
-	square,
-	triangle,
-	homeOutline,
-	folderOutline,
-	helpCircleOutline,
+  ellipse,
+  square,
+  triangle,
+  homeOutline,
+  folderOutline,
+  helpCircleOutline,
 } from "ionicons/icons";
 
 /* Core CSS required for Ionic components to work properly */
@@ -43,53 +43,57 @@ import Others from "./pages/Others/Others";
 import Surveys from "./pages/Others/Surveys/Surveys";
 import "antd/dist/antd.css"; // or 'antd/dist/antd.less'
 import { QueryClient, QueryClientProvider } from "react-query";
+import Settings from "./pages/Others/Settings/Settings";
 const queryClient = new QueryClient();
 const App: React.FC = () => (
-	<QueryClientProvider client={queryClient}>
-		<IonApp>
-			<IonReactRouter>
-				<IonTabs>
-					<IonRouterOutlet>
-						<Route exact path="/home">
-							<Home />
-						</Route>
-						<Route exact path="/application">
-							<Application />
-						</Route>
-						<Route exact path="/support">
-							<Support />
-						</Route>
-						<Route exact path="/others/surveys">
-							<Surveys />
-						</Route>
-						<Route exact path="/others">
-							<Others />
-						</Route>
-						<Route exact path="/">
-							<Redirect to="/home" />
-						</Route>
-					</IonRouterOutlet>
-					<IonTabBar slot="bottom">
-						<IonTabButton tab="home" href="/home">
-							<IonIcon icon={homeOutline} />
-							<IonLabel>Home</IonLabel>
-						</IonTabButton>
-						<IonTabButton tab="application" href="/application">
-							<IonIcon icon={folderOutline} />
-							<IonLabel>Application Form</IonLabel>
-						</IonTabButton>
-						<IonTabButton tab="support" href="/support">
-							<IonIcon icon={helpCircleOutline} />
-							<IonLabel>Support</IonLabel>
-						</IonTabButton>
-						<IonTabButton tab="others" href="/others">
-							<IonLabel>Others</IonLabel>
-						</IonTabButton>
-					</IonTabBar>
-				</IonTabs>
-			</IonReactRouter>
-		</IonApp>
-	</QueryClientProvider>
+  <QueryClientProvider client={queryClient}>
+    <IonApp>
+      <IonReactRouter>
+        <IonTabs>
+          <IonRouterOutlet>
+            <Route exact path="/home">
+              <Home />
+            </Route>
+            <Route exact path="/application">
+              <Application />
+            </Route>
+            <Route exact path="/support">
+              <Support />
+            </Route>
+            <Route exact path="/others/settings">
+              <Settings />
+            </Route>
+            <Route exact path="/others/surveys">
+              <Surveys />
+            </Route>
+            <Route exact path="/others">
+              <Others />
+            </Route>
+            <Route exact path="/">
+              <Redirect to="/home" />
+            </Route>
+          </IonRouterOutlet>
+          <IonTabBar slot="bottom">
+            <IonTabButton tab="home" href="/home">
+              <IonIcon icon={homeOutline} />
+              <IonLabel>Home</IonLabel>
+            </IonTabButton>
+            <IonTabButton tab="application" href="/application">
+              <IonIcon icon={folderOutline} />
+              <IonLabel>Application Form</IonLabel>
+            </IonTabButton>
+            <IonTabButton tab="support" href="/support">
+              <IonIcon icon={helpCircleOutline} />
+              <IonLabel>Support</IonLabel>
+            </IonTabButton>
+            <IonTabButton tab="others" href="/others">
+              <IonLabel>Others</IonLabel>
+            </IonTabButton>
+          </IonTabBar>
+        </IonTabs>
+      </IonReactRouter>
+    </IonApp>
+  </QueryClientProvider>
 );
 
 export default App;
