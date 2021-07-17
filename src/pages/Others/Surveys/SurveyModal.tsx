@@ -87,7 +87,6 @@ const SurveyModal: React.FC<surverProps> = ({
 			form_type_id: showSurveyModal.data.id,
 			answers: formValues,
 		};
-		console.log("formValues", formValues);
 		mutationSurverAnswer.mutate(data, {
 			onSuccess: (res) => {
 				console.log("formValues", res);
@@ -221,7 +220,6 @@ const SurveyModal: React.FC<surverProps> = ({
 													);
 												}
 											);
-											console.log("category_answers", category_answers);
 
 											return (
 												<Card
