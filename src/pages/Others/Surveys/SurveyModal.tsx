@@ -23,8 +23,15 @@ import {
 	Checkbox,
 	Select,
 	DatePicker,
+	Steps,
+	Divider,
+	message,
+	Alert,
 } from "antd";
 import { QuestionCircleOutlined } from "@ant-design/icons";
+import { useMutation } from "react-query";
+import axios from "axios";
+import getStorage from "../../../providers/getStorage";
 interface surverProps {
 	setShowSurveyModal: any;
 	showSurveyModal: any;
@@ -33,28 +40,61 @@ const SurveyModal: React.FC<surverProps> = ({
 	setShowSurveyModal,
 	showSurveyModal,
 }) => {
+	const [apiUrl, setApiUrl] = useState("");
+	const [apiKey, setApiKey] = useState("");
+
+	useEffect(() => {
+		getStorage("api_url").then((res) => {
+			setApiUrl(res ? res : "");
+		});
+		getStorage("api_key").then((res) => {
+			setApiKey(res ? res : "");
+		});
+		return () => {};
+	}, []);
+
 	useEffect(() => {
 		console.log("showSurveyModalasda", showSurveyModal);
 		return () => {};
 	}, [showSurveyModal]);
 
-	const [collapseActiveKey, setCollapseActiveKey] = useState(1);
+	const [stepActiveKey, setStepActiveKey] = useState(0);
 
 	const handleOnChangeQuestionCategory = (e: any) => {
-		setCollapseActiveKey(e);
+		setStepActiveKey(e);
 	};
 
 	const [formValues, setFormValues] = useState({});
 	const handleSubmitCategory = (values: any) => {
-		if (collapseActiveKey == showSurveyModal.data.question_categories.length) {
-			let data = { ...formValues, ...values };
-			console.log(data);
-		} else {
-			setFormValues({ ...formValues, ...values });
-			setCollapseActiveKey(collapseActiveKey + 1);
-		}
+		setFormValues({ ...formValues, ...values });
+		setStepActiveKey(stepActiveKey + 1);
 	};
 
+	type Variables = { form_type_id: any; answers: any };
+	const [submitSuccess, setSubmitSuccess] = useState(false);
+	const mutationSurverAnswer = useMutation((data: Variables) => {
+		return axios
+			.post(`${apiUrl}/api/mobile/form_type_answer`, data, {
+				headers: {
+					Authorization: apiKey,
+				},
+			})
+			.then((res) => res.data);
+	});
+
+	const handleSubmitSurvey = () => {
+		let data = {
+			form_type_id: showSurveyModal.data.id,
+			answers: formValues,
+		};
+		console.log("formValues", formValues);
+		mutationSurverAnswer.mutate(data, {
+			onSuccess: (res) => {
+				console.log("formValues", res);
+				setSubmitSuccess(true);
+			},
+		});
+	};
 	return (
 		<IonModal isOpen={showSurveyModal.show}>
 			<div className="container" style={{ overflowY: "auto" }}>
@@ -66,120 +106,161 @@ const SurveyModal: React.FC<surverProps> = ({
 						</Button>
 					}
 				>
-					<Collapse
-						accordion
-						activeKey={collapseActiveKey}
-						onChange={(e) => handleOnChangeQuestionCategory(e)}
+					<Steps
+						progressDot
+						current={stepActiveKey}
+						// onChange={(e) => setStepActiveKey(e)}
 					>
 						{showSurveyModal &&
 							showSurveyModal.data &&
 							Object.values(showSurveyModal.data.question_categories).map(
 								(questionCategory: any, key: any) => {
-									return (
-										<Collapse.Panel
-											header={`${alphabets[key].toUpperCase()}. ${
-												questionCategory.category
-											}`}
-											key={key + 1}
-											// extra={
-											//     activekeyCount >
-											//     key + 1 ? (
-											//         <CheckCircleOutlined
-											//             style={{
-											//                 color:
-											//                     "green",
-											//                 fontSize: 20
-											//             }}
-											//         />
-											//     ) : (
-											//         <CloseCircleOutlined
-											//             style={{
-											//                 color:
-											//                     "red",
-											//                 fontSize: 20
-											//             }}
-											//         />
-											//     )
-											// }
-										>
-											<Form
-												onFinish={(values) => handleSubmitCategory(values)}
-												// initialValues={defaultAnswers}
-											>
-												{questionCategory.questions.map(
-													(question: any, question_key: any) => {
-														let question_input = generateQuestionOptions(question);
-
-														// console.log(
-														//     question.id,
-														//     "question.description",
-														//     question.description,
-														//     question.description.replace(
-														//         "___",
-														//         member.name
-														//     )
-														// );
-
-														return (
-															<Card
-																size="small"
-																hoverable
-																key={`card_questions_${question.id}`}
-															>
-																<Row key={`question_row_${question.id}`}>
-																	<Col xs={24} md={12}>
-																		<b>
-																			{question_key + 1}:{" "}
-																			<span
-																				dangerouslySetInnerHTML={{
-																					__html: question.question,
-																				}}
-																			></span>{" "}
-																			{question.question_tips && question.question_tips != "" && (
-																				<Tooltip title={question.question_tips}>
-																					<QuestionCircleOutlined />
-																				</Tooltip>
-																			)}
-																		</b>
-																		<br />
-																		<small>
-																			<span
-																				dangerouslySetInnerHTML={{
-																					__html: question.description,
-																				}}
-																			></span>
-																		</small>
-																	</Col>
-																	<Col xs={24} md={12}>
-																		{question_input}
-																	</Col>
-																</Row>
-															</Card>
-														);
-													}
-												)}
-												<br />
-												<div className="text-right">
-													<Button
-														type="primary"
-														htmlType="submit"
-														// loading={isLoadingMutateSaveAnswer}
-													>
-														{key !=
-														Object.values(showSurveyModal.data.question_categories).length -
-															1 ? (
-															<>Valdate and Proceed</>
-														) : (
-															<>Submit</>
-														)}
-													</Button>
-												</div>
-											</Form>
-										</Collapse.Panel>
-									);
+									return <Steps.Step title={questionCategory.category} />;
 								}
 							)}
-					</Collapse>
+
+						<Steps.Step title="Review & Submit" />
+					</Steps>
+					<Divider />
+					{showSurveyModal &&
+						showSurveyModal.data &&
+						Object.values(showSurveyModal.data.question_categories).map(
+							(questionCategory: any, key: any) => {
+								return (
+									<div className={`${stepActiveKey == key ? "" : "hide"}`}>
+										<h1>{questionCategory.category}</h1>
+										<Form
+											onFinish={(values) => handleSubmitCategory(values)}
+											// initialValues={defaultAnswers}
+										>
+											{questionCategory.questions.map(
+												(question: any, question_key: any) => {
+													let question_input = generateQuestionOptions(question);
+
+													return (
+														<Card
+															size="small"
+															hoverable
+															key={`card_questions_${question.id}`}
+														>
+															<Row key={`question_row_${question.id}`}>
+																<Col xs={24} md={12}>
+																	<b>
+																		{question_key + 1}:{" "}
+																		<span
+																			dangerouslySetInnerHTML={{
+																				__html: question.question,
+																			}}
+																		></span>{" "}
+																		{question.question_tips && question.question_tips != "" && (
+																			<Tooltip title={question.question_tips}>
+																				<QuestionCircleOutlined />
+																			</Tooltip>
+																		)}
+																	</b>
+																	<br />
+																	<small>
+																		<span
+																			dangerouslySetInnerHTML={{
+																				__html: question.description,
+																			}}
+																		></span>
+																	</small>
+																</Col>
+																<Col xs={24} md={12}>
+																	{question_input}
+																</Col>
+															</Row>
+														</Card>
+													);
+												}
+											)}
+											<br />
+											<div className="text-right">
+												{stepActiveKey > 0 && (
+													<Button
+														htmlType="submit"
+														// loading={isLoadingMutateSaveAnswer}
+														onClick={(e) => setStepActiveKey(stepActiveKey - 1)}
+													>
+														Previous
+													</Button>
+												)}
+												<Button
+													type="primary"
+													htmlType="submit"
+													// loading={isLoadingMutateSaveAnswer}
+												>
+													Valdate and Proceed
+												</Button>
+											</div>
+										</Form>
+									</div>
+								);
+							}
+						)}
+
+					{showSurveyModal.data &&
+						stepActiveKey ==
+							Object.values(showSurveyModal.data.question_categories).length && (
+							<>
+								<div>
+									<h1>Review & Submit</h1>
+									{Object.values(showSurveyModal.data.question_categories).map(
+										(category: any, category_key: any) => {
+											let category_answers = category.questions.map(
+												(_question: any, question_key: any) => {
+													let answer_key = Object.keys(formValues).indexOf(
+														`qid_${_question.id}`
+													);
+													let answer_value = Object.values(formValues)[answer_key];
+													return (
+														<div>
+															{_question.question}: {answer_value}
+														</div>
+													);
+												}
+											);
+											console.log("category_answers", category_answers);
+
+											return (
+												<Card
+													style={{ marginBottom: 5 }}
+													title={category.category}
+													size="small"
+												>
+													{category_answers}
+												</Card>
+											);
+										}
+									)}
+									<Divider />
+									{submitSuccess ? (
+										<>
+											<Alert message="Survey Successfully Submitted" type="success" />
+										</>
+									) : (
+										<div className="text-right">
+											<Button
+												htmlType="submit"
+												// loading={isLoadingMutateSaveAnswer}
+												onClick={(e) => setStepActiveKey(stepActiveKey - 1)}
+											>
+												Previous
+											</Button>
+											<Button
+												type="primary"
+												// htmlType="submit"
+												onClick={(e) => handleSubmitSurvey()}
+												// loading={isLoadingMutateSaveAnswer}
+											>
+												Submit
+											</Button>
+										</div>
+									)}
+								</div>
+							</>
+						)}
 				</Card>
 			</div>
 		</IonModal>
@@ -219,7 +300,6 @@ const alphabets = [
 //for upper case use the toUpperCase() function
 
 function generateQuestionOptions(question: any) {
-	console.log("questionxx", question);
 	let question_input;
 	switch (question.question_type) {
 		case "text":

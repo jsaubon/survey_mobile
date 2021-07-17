@@ -15,8 +15,6 @@ import { useMutation, useQuery, useQueryClient } from "react-query";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import SurveyModal from "./SurveyModal";
-import getApiUrl from "../../../providers/getApiUrl";
-import getApiKey from "../../../providers/getApiKey";
 import getStorage from "../../../providers/getStorage";
 
 const Surveys = () => {
