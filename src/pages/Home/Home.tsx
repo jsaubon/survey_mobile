@@ -12,26 +12,73 @@ import {
 } from "@ionic/react";
 import { newspaperOutline } from "ionicons/icons";
 import "./Home.css";
-import { Carousel, List } from "antd";
+import { Carousel, List, message } from "antd";
 import Text from "antd/lib/typography/Text";
+import { useQuery } from "react-query";
+import axios from "axios";
+import getStorage from "../../providers/getStorage";
+import moment from "moment";
+import { useEffect, useState } from "react";
 
 const Home = () => {
-	const slideOpts = {
-		initialSlide: 1,
-		speed: 400,
-		autoplay: {
-			delay: 10000,
-		},
-		centeredSlides: true,
-		loop: true,
-	};
-	const contentStyle = {
-		height: "160px",
-		color: "#fff",
-		lineHeight: "160px",
-		textAlign: "center",
-		background: "#364d79",
-	};
+	const [apiUrl, setApiUrl] = useState("");
+	const [apiKey, setApiKey] = useState("");
+
+	useEffect(() => {
+		getStorage("api_url").then((res) => {
+			setApiUrl(res ? res : "");
+		});
+		getStorage("api_key").then((res) => {
+			setApiKey(res ? res : "");
+		});
+		return () => {};
+	}, []);
+	useEffect(() => {
+		if (apiUrl != "" && apiKey != "") {
+			refetchDataMobileBuletins();
+		}
+		return () => {};
+	}, [apiUrl, apiKey]);
+
+	const {
+		data: dataMobileBulletins,
+		isLoading: isLoadingDataMobileBulletins,
+		refetch: refetchDataMobileBuletins,
+		isFetching: isFetchinDataMobileBulletins,
+	} = useQuery(
+		"bulletins",
+		() =>
+			axios
+				.get(`${apiUrl}/api/mobile/mobile_bulletin`, {
+					headers: {
+						Authorization: apiKey,
+					},
+				})
+				.then((res) => res.data),
+		{
+			enabled: false,
+			retry: 1,
+			retryDelay: 500,
+			refetchOnWindowFocus: true,
+			onSuccess: (res) => {
+				console.log("res", res);
+				if (res.success) {
+					message.success("success");
+				} else {
+					message.error("Connected Failed");
+				}
+			},
+			onError: (err) => {
+				console.log(err);
+				message.error("Connected Failed");
+			},
+		}
+	);
+
+	useEffect(() => {
+		console.log("dataMobileBulletins", dataMobileBulletins);
+		return () => {};
+	}, [dataMobileBulletins]);
 
 	return (
 		<IonPage>
@@ -50,64 +97,30 @@ const Home = () => {
 				{/* <div className="container">
                     
                 </div> */}
+				{/*  */}
 				<IonCard>
-					<Carousel speed={200} afterChange={(e) => console.log(e)}>
-						<div>
-							<h3
-								style={{
-									height: "160px",
-									color: "#fff",
-									lineHeight: "160px",
-									textAlign: "center",
-									background: "#364d79",
-									marginBottom: 0,
-								}}
-							>
-								1
-							</h3>
-						</div>
-						<div>
-							<h3
-								style={{
-									height: "160px",
-									color: "#fff",
-									lineHeight: "160px",
-									textAlign: "center",
-									background: "#364d79",
-									marginBottom: 0,
-								}}
-							>
-								2
-							</h3>
-						</div>
-						<div>
-							<h3
-								style={{
-									height: "160px",
-									color: "#fff",
-									lineHeight: "160px",
-									textAlign: "center",
-									background: "#364d79",
-									marginBottom: 0,
-								}}
-							>
-								3
-							</h3>
-						</div>
-						<div>
-							<h3
-								style={{
-									height: "160px",
-									color: "#fff",
-									lineHeight: "160px",
-									textAlign: "center",
-									background: "#364d79",
-									marginBottom: 0,
-								}}
-							>
-								4
-							</h3>
-						</div>
+					<Carousel autoplay>
+						{dataMobileBulletins &&
+							dataMobileBulletins.data &&
+							dataMobileBulletins.data
+								.filter(
+									(p: any) =>
+										moment(p.date_start).unix() <= moment().unix() &&
+										moment(p.date_end).unix() >= moment().unix()
+								)
+								.map((bulletin: any, bulletin_key: any) => {
+									return (
+										<div key={bulletin_key} style={{ textAlign: "center" }}>
+											<img
+												src={apiUrl + "/" + bulletin.image_path}
+												alt="avatar"
+												style={{
+													margin: "auto",
+												}}
+											/>
+										</div>
+									);
+								})}
 					</Carousel>
 				</IonCard>
 				<div style={{ paddingLeft: 15, paddingRight: 15 }}>
