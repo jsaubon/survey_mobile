@@ -19,8 +19,10 @@ import axios from "axios";
 import getStorage from "../../providers/getStorage";
 import moment from "moment";
 import { useEffect, useState } from "react";
+import { useHistory } from "react-router";
 
 const Home = () => {
+	let history = useHistory();
 	const [apiUrl, setApiUrl] = useState("");
 	const [apiKey, setApiKey] = useState("");
 
@@ -35,11 +37,20 @@ const Home = () => {
 	}, []);
 	useEffect(() => {
 		if (apiUrl != "" && apiKey != "") {
+			console.log("apiUrl", apiUrl);
+			console.log("apiKey", apiKey);
 			refetchDataMobileBuletins();
 		}
 		return () => {};
 	}, [apiUrl, apiKey]);
-
+	useEffect(() => {
+		return history.listen((location) => {
+			console.log(`You changed the page to: ${location.pathname}`);
+			if (location.pathname == "/home") {
+				refetchDataMobileBuletins();
+			}
+		});
+	}, [history]);
 	const {
 		data: dataMobileBulletins,
 		isLoading: isLoadingDataMobileBulletins,
@@ -59,7 +70,7 @@ const Home = () => {
 			enabled: false,
 			retry: 1,
 			retryDelay: 500,
-			refetchOnWindowFocus: true,
+			refetchOnWindowFocus: false,
 			onSuccess: (res) => {
 				console.log("res", res);
 				if (res.success) {
@@ -69,8 +80,9 @@ const Home = () => {
 				}
 			},
 			onError: (err) => {
-				console.log(err);
-				message.error("Connected Failed");
+				// message.error("Connected Failed");
+				// message.error(JSON.stringify(err));
+				refetchDataMobileBuletins();
 			},
 		}
 	);
@@ -99,7 +111,7 @@ const Home = () => {
                 </div> */}
 				{/*  */}
 				<IonCard>
-					<Carousel autoplay>
+					<Carousel autoplay autoplaySpeed={10000}>
 						{dataMobileBulletins &&
 							dataMobileBulletins.data &&
 							dataMobileBulletins.data
