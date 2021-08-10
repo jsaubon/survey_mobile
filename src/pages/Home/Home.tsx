@@ -22,39 +22,10 @@ import { useEffect, useState } from "react";
 import { useHistory } from "react-router";
 
 const Home = () => {
-	let history = useHistory();
-	const [apiUrl, setApiUrl] = useState("");
-	const [apiKey, setApiKey] = useState("");
-
-	useEffect(() => {
-		getStorage("api_url").then((res) => {
-			setApiUrl(res ? res : "");
-		});
-		getStorage("api_key").then((res) => {
-			setApiKey(res ? res : "");
-		});
-		return () => {};
-	}, []);
-	useEffect(() => {
-		if (apiUrl != "" && apiKey != "") {
-			console.log("apiUrl", apiUrl);
-			console.log("apiKey", apiKey);
-			refetchDataMobileBuletins();
-		}
-		return () => {};
-	}, [apiUrl, apiKey]);
-	useEffect(() => {
-		return history.listen((location) => {
-			console.log(`You changed the page to: ${location.pathname}`);
-			if (location.pathname == "/home") {
-				refetchDataMobileBuletins();
-			}
-		});
-	}, [history]);
 	const {
 		data: dataMobileBulletins,
 		isLoading: isLoadingDataMobileBulletins,
-		refetch: refetchDataMobileBuletins,
+		refetch: refetchDataMobileBulletins,
 		isFetching: isFetchinDataMobileBulletins,
 	} = useQuery(
 		"bulletins",
@@ -82,10 +53,75 @@ const Home = () => {
 			onError: (err) => {
 				// message.error("Connected Failed");
 				// message.error(JSON.stringify(err));
-				refetchDataMobileBuletins();
 			},
 		}
 	);
+
+	const {
+		data: dataMobileNewsAndAnnouncements,
+		isLoading: isLoadingDataMobileNewsAndAnnouncements,
+		refetch: refetchDataMobileNewsAndAnnouncements,
+		isFetching: isFetchinDataMobileNewsAndAnnouncements,
+	} = useQuery(
+		"news_and_announcements",
+		() =>
+			axios
+				.get(`${apiUrl}/api/mobile/mobile_news_and_announcement`, {
+					headers: {
+						Authorization: apiKey,
+					},
+				})
+				.then((res) => res.data),
+		{
+			enabled: false,
+			retry: 1,
+			retryDelay: 500,
+			refetchOnWindowFocus: false,
+			onSuccess: (res) => {
+				console.log("res", res);
+				if (res.success) {
+					message.success("success");
+				} else {
+					message.error("Connected Failed");
+				}
+			},
+			onError: (err) => {
+				// message.error("Connected Failed");
+				// message.error(JSON.stringify(err));
+			},
+		}
+	);
+	let history = useHistory();
+	const [apiUrl, setApiUrl] = useState("");
+	const [apiKey, setApiKey] = useState("");
+
+	useEffect(() => {
+		getStorage("api_url").then((res) => {
+			setApiUrl(res ? res : "");
+		});
+		getStorage("api_key").then((res) => {
+			setApiKey(res ? res : "");
+		});
+		return () => {};
+	}, []);
+	useEffect(() => {
+		if (apiUrl != "") {
+			if (apiKey != "") {
+				console.log("apiUrl", apiUrl);
+				console.log("apiKey", apiKey);
+				refetchDataMobileBulletins();
+			}
+		}
+		return () => {};
+	}, [apiUrl, apiKey]);
+	useEffect(() => {
+		return history.listen((location) => {
+			console.log(`You changed the page to: ${location.pathname}`);
+			if (location.pathname == "/home") {
+				refetchDataMobileBulletins();
+			}
+		});
+	}, [history]);
 
 	useEffect(() => {
 		console.log("dataMobileBulletins", dataMobileBulletins);
@@ -141,60 +177,15 @@ const Home = () => {
 						News and Announcements
 					</h1>
 					<List bordered>
-						<List.Item>
-							<Text>
-								Lorem ipsum dolor sit, amet consectetur adipisicing elit. Fugit iure
-								explicab
-							</Text>
-						</List.Item>
-						<List.Item>
-							<Text>
-								Lorem ipsum dolor sit, amet consectetur adipisicing elit. Fugit iure
-								explicab
-							</Text>
-						</List.Item>
-						<List.Item>
-							<Text>
-								Lorem ipsum dolor sit, amet consectetur adipisicing elit. Fugit iure
-								explicab
-							</Text>
-						</List.Item>
-						<List.Item>
-							<Text>
-								Lorem ipsum dolor sit, amet consectetur adipisicing elit. Fugit iure
-								explicab
-							</Text>
-						</List.Item>
-						<List.Item>
-							<Text>
-								Lorem ipsum dolor sit, amet consectetur adipisicing elit. Fugit iure
-								explicab
-							</Text>
-						</List.Item>
-						<List.Item>
-							<Text>
-								Lorem ipsum dolor sit, amet consectetur adipisicing elit. Fugit iure
-								explicab
-							</Text>
-						</List.Item>
-						<List.Item>
-							<Text>
-								Lorem ipsum dolor sit, amet consectetur adipisicing elit. Fugit iure
-								explicab
-							</Text>
-						</List.Item>
-						<List.Item>
-							<Text>
-								Lorem ipsum dolor sit, amet consectetur adipisicing elit. Fugit iure
-								explicab
-							</Text>
-						</List.Item>
-						<List.Item>
-							<Text>
-								Lorem ipsum dolor sit, amet consectetur adipisicing elit. Fugit iure
-								explicab
-							</Text>
-						</List.Item>
+						{dataMobileNewsAndAnnouncements &&
+							dataMobileNewsAndAnnouncements.data &&
+							dataMobileNewsAndAnnouncements.data.map((news: any, key: any) => {
+								return (
+									<List.Item>
+										<Text>{news.content}</Text>
+									</List.Item>
+								);
+							})}
 					</List>
 				</div>
 			</IonContent>
