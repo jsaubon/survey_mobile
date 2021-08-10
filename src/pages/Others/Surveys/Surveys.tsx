@@ -16,8 +16,10 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import SurveyModal from "./SurveyModal";
 import getStorage from "../../../providers/getStorage";
+import setStorage from "../../../providers/setStorage";
 
 const Surveys = () => {
+	const [mobileSurveys, setMobileSurveys] = useState<any>();
 	const {
 		data: dataSurveys,
 		isLoading: isLoadingSurveys,
@@ -40,11 +42,21 @@ const Surveys = () => {
 			refetchOnWindowFocus: false,
 			onSuccess: (res) => {
 				console.log("res", res);
-				message.success("success");
+				if (res.success) {
+					setStorage("surveys", JSON.stringify(res.data));
+					setMobileSurveys(res.data);
+					message.success("success");
+				}
 			},
 			onError: (err) => {
 				console.log(err);
 				message.error("Connected Failed");
+				getStorage("surveys").then((res: any) => {
+					if (res) {
+						console.log("failed surveys", JSON.parse(res));
+						setMobileSurveys(JSON.parse(res));
+					}
+				});
 			},
 		}
 	);
@@ -96,9 +108,8 @@ const Surveys = () => {
 				{/* <ExploreContainer name="Tab 1 page" /> */}
 				<div className="container">
 					<List bordered loading={isLoadingSurveys}>
-						{dataSurveys &&
-							dataSurveys.data &&
-							dataSurveys.data.map((survey: any, key: any) => {
+						{mobileSurveys &&
+							mobileSurveys.map((survey: any, key: any) => {
 								return (
 									<List.Item key={key}>
 										{survey.form_type}
