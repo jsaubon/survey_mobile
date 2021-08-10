@@ -4,6 +4,7 @@ import {
 	IonContent,
 	IonHeader,
 	IonIcon,
+	IonModal,
 	IonPage,
 	IonSlide,
 	IonSlides,
@@ -12,16 +13,25 @@ import {
 } from "@ionic/react";
 import { newspaperOutline } from "ionicons/icons";
 import "./Home.css";
-import { Carousel, List, message } from "antd";
+import { Button, Card, Carousel, List, message } from "antd";
 import Text from "antd/lib/typography/Text";
 import { useQuery } from "react-query";
 import axios from "axios";
 import getStorage from "../../providers/getStorage";
+import setStorage from "../../providers/setStorage";
 import moment from "moment";
 import { useEffect, useState } from "react";
 import { useHistory } from "react-router";
+import Paragraph from "antd/lib/typography/Paragraph";
+import { Link } from "react-router-dom";
 
 const Home = () => {
+	const [mobileBulletins, setMobileBulletins] = useState<any>();
+	const [mobileNews, setMobileNews] = useState<any>();
+	useEffect(() => {
+		console.log("mobileNews", mobileNews);
+		return () => {};
+	}, [mobileNews]);
 	const {
 		data: dataMobileBulletins,
 		isLoading: isLoadingDataMobileBulletins,
@@ -46,12 +56,20 @@ const Home = () => {
 				console.log("res", res);
 				if (res.success) {
 					message.success("success");
+					setStorage("bulletins", JSON.stringify(res.data));
+					setMobileBulletins(res.data);
 				} else {
 					message.error("Connected Failed");
 				}
 			},
 			onError: (err) => {
-				// message.error("Connected Failed");
+				message.error("Connected Failed");
+				getStorage("bulletins").then((res: any) => {
+					if (res) {
+						console.log("failed bulletins", JSON.parse(res));
+						setMobileBulletins(JSON.parse(res));
+					}
+				});
 				// message.error(JSON.stringify(err));
 			},
 		}
@@ -80,20 +98,33 @@ const Home = () => {
 			onSuccess: (res) => {
 				console.log("res", res);
 				if (res.success) {
+					setStorage("news_and_announcements", JSON.stringify(res.data));
+					setMobileNews(res.data);
 					message.success("success");
 				} else {
 					message.error("Connected Failed");
 				}
 			},
 			onError: (err) => {
-				// message.error("Connected Failed");
+				message.error("Connected Failed");
+				getStorage("news_and_announcements").then((res: any) => {
+					if (res) {
+						console.log("failed news_and_announcements", JSON.parse(res));
+						setMobileNews(JSON.parse(res));
+					}
+				});
 				// message.error(JSON.stringify(err));
 			},
 		}
 	);
+
 	let history = useHistory();
 	const [apiUrl, setApiUrl] = useState("");
 	const [apiKey, setApiKey] = useState("");
+	const [showNewsModal, setShowNewsModal] = useState<any>({
+		show: false,
+		data: null,
+	});
 
 	useEffect(() => {
 		getStorage("api_url").then((res) => {
@@ -110,6 +141,7 @@ const Home = () => {
 				console.log("apiUrl", apiUrl);
 				console.log("apiKey", apiKey);
 				refetchDataMobileBulletins();
+				refetchDataMobileNewsAndAnnouncements();
 			}
 		}
 		return () => {};
@@ -119,6 +151,7 @@ const Home = () => {
 			console.log(`You changed the page to: ${location.pathname}`);
 			if (location.pathname == "/home") {
 				refetchDataMobileBulletins();
+				refetchDataMobileNewsAndAnnouncements();
 			}
 		});
 	}, [history]);
@@ -148,9 +181,8 @@ const Home = () => {
 				{/*  */}
 				<IonCard>
 					<Carousel autoplay autoplaySpeed={10000}>
-						{dataMobileBulletins &&
-							dataMobileBulletins.data &&
-							dataMobileBulletins.data
+						{mobileBulletins &&
+							mobileBulletins
 								.filter(
 									(p: any) =>
 										moment(p.date_start).unix() <= moment().unix() &&
@@ -177,18 +209,39 @@ const Home = () => {
 						News and Announcements
 					</h1>
 					<List bordered>
-						{dataMobileNewsAndAnnouncements &&
-							dataMobileNewsAndAnnouncements.data &&
-							dataMobileNewsAndAnnouncements.data.map((news: any, key: any) => {
+						{mobileNews &&
+							mobileNews.map((news: any, key: any) => {
 								return (
-									<List.Item>
-										<Text>{news.content}</Text>
+									<List.Item
+										key={key}
+										onClick={(e) => setShowNewsModal({ show: true, data: news })}
+									>
+										<Text>{news.title}</Text>
 									</List.Item>
 								);
 							})}
 					</List>
 				</div>
 			</IonContent>
+
+			<IonModal isOpen={showNewsModal.show}>
+				<div className="container" style={{ overflowY: "auto" }}>
+					<Card
+						title={showNewsModal.data != null ? showNewsModal.data?.title : ""}
+						extra={
+							<Button
+								onClick={(e: any) => setShowNewsModal({ show: false, data: null })}
+							>
+								Close
+							</Button>
+						}
+					>
+						<Paragraph>
+							{showNewsModal.data != null ? showNewsModal.data?.content : ""}
+						</Paragraph>
+					</Card>
+				</div>
+			</IonModal>
 		</IonPage>
 	);
 };
