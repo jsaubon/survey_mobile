@@ -32,14 +32,25 @@ import { QuestionCircleOutlined } from "@ant-design/icons";
 import { useMutation } from "react-query";
 import axios from "axios";
 import getStorage from "../../../providers/getStorage";
-interface surverProps {
+import setStorage from "../../../providers/setStorage";
+interface surveyProps {
 	setShowSurveyModal: any;
 	showSurveyModal: any;
 }
-const SurveyModal: React.FC<surverProps> = ({
+const SurveyModal: React.FC<surveyProps> = ({
 	setShowSurveyModal,
 	showSurveyModal,
 }) => {
+	const [pendingSubmissions, setPendingSubmissions] = useState<any>();
+	useEffect(() => {
+		getStorage("pending_submissions").then((res) => {
+			if (res) {
+				setPendingSubmissions(JSON.parse(res));
+			}
+		});
+		return () => {};
+	}, []);
+
 	const [apiUrl, setApiUrl] = useState("");
 	const [apiKey, setApiKey] = useState("");
 
@@ -72,6 +83,7 @@ const SurveyModal: React.FC<surverProps> = ({
 
 	type Variables = { form_type_id: any; answers: any };
 	const [submitSuccess, setSubmitSuccess] = useState(false);
+	const [pendingSuccess, setPendingSuccess] = useState(false);
 	const mutationSurverAnswer = useMutation((data: Variables) => {
 		return axios
 			.post(`${apiUrl}/api/mobile/form_type_answer`, data, {
@@ -92,10 +104,25 @@ const SurveyModal: React.FC<surverProps> = ({
 				console.log("formValues", res);
 				setSubmitSuccess(true);
 			},
+			onError: (err) => {
+				let _pendingSubmissions: any[] = [];
+				if (pendingSubmissions) {
+					_pendingSubmissions = [...pendingSubmissions];
+				}
+
+				_pendingSubmissions.push(data);
+				console.log("_pendingSubmissions", _pendingSubmissions);
+				setStorage("pending_submissions", JSON.stringify(_pendingSubmissions));
+				console.log("err", err);
+				setPendingSuccess(true);
+			},
 		});
 	};
 	return (
-		<IonModal isOpen={showSurveyModal.show}>
+		<IonModal
+			isOpen={showSurveyModal.show}
+			onDidDismiss={(e) => setShowSurveyModal({ show: false, data: null })}
+		>
 			<div className="container" style={{ overflowY: "auto" }}>
 				<Card
 					title={showSurveyModal.data && showSurveyModal.data.form_type}
@@ -233,9 +260,17 @@ const SurveyModal: React.FC<surverProps> = ({
 										}
 									)}
 									<Divider />
-									{submitSuccess ? (
+									{submitSuccess || pendingSuccess ? (
 										<>
-											<Alert message="Survey Successfully Submitted" type="success" />
+											{submitSuccess && (
+												<Alert message="Survey Successfully Submitted" type="success" />
+											)}
+											{pendingSuccess && (
+												<Alert
+													message="No Connection..., Survey Added to Pending List"
+													type="warning"
+												/>
+											)}
 										</>
 									) : (
 										<div className="text-right">

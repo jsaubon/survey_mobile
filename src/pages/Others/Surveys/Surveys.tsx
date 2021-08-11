@@ -17,9 +17,12 @@ import { useEffect, useState } from "react";
 import SurveyModal from "./SurveyModal";
 import getStorage from "../../../providers/getStorage";
 import setStorage from "../../../providers/setStorage";
+import { UploadOutlined } from "@ant-design/icons";
+import SurveyModalPendingSumissions from "./SurveyModalPendingSumissions";
 
 const Surveys = () => {
 	const [mobileSurveys, setMobileSurveys] = useState<any>();
+	const [pendingSubmissions, setPendingSubmissions] = useState<any>();
 	const {
 		data: dataSurveys,
 		isLoading: isLoadingSurveys,
@@ -61,6 +64,23 @@ const Surveys = () => {
 		}
 	);
 
+	useEffect(() => {
+		getPendingSubmissions();
+		return () => {};
+	}, []);
+
+	const getPendingSubmissions = () => {
+		getStorage("pending_submissions").then((res) => {
+			if (res) {
+				setPendingSubmissions(JSON.parse(res));
+			}
+		});
+	};
+	useEffect(() => {
+		console.log("pendingSubmissions", pendingSubmissions);
+		return () => {};
+	}, [pendingSubmissions]);
+
 	const [apiUrl, setApiUrl] = useState("");
 	const [apiKey, setApiKey] = useState("");
 
@@ -87,8 +107,65 @@ const Surveys = () => {
 
 	useEffect(() => {
 		console.log("showSurveyModal", showSurveyModal);
+		if (showSurveyModal.show == false) {
+			getPendingSubmissions();
+		}
 		return () => {};
 	}, [showSurveyModal]);
+
+	// const [showSurveySubmissions, setShowSurveySubmissions] = useState<any>({
+	// 	show: false,
+	// 	data: null,
+	// });
+
+	type Variables = { form_type_id: any; answers: any };
+	const [submitSuccess, setSubmitSuccess] = useState(false);
+	const mutationSurverAnswer = useMutation((data: Variables) => {
+		return axios
+			.post(`${apiUrl}/api/mobile/form_type_answer`, data, {
+				headers: {
+					Authorization: apiKey,
+				},
+			})
+			.then((res) => res.data);
+	});
+
+	const handleUploadSurveySubmissions = (form_type_id: any) => {
+		let answers = pendingSubmissions.filter(
+			(p: any) => p.form_type_id == form_type_id
+		);
+
+		console.log("answers", answers);
+
+		let data = {
+			form_type_id: form_type_id,
+			answers: answers,
+			bulk: 1,
+		};
+		mutationSurverAnswer.mutate(data, {
+			onSuccess: (res) => {
+				console.log("formValues", res);
+				let _pendingSubmissions: any[] = [];
+				if (pendingSubmissions) {
+					_pendingSubmissions = [...pendingSubmissions];
+				}
+
+				_pendingSubmissions = _pendingSubmissions.filter(
+					(p) => p.form_type_id != form_type_id
+				);
+				console.log("_pendingSubmissions", _pendingSubmissions);
+				setStorage("pending_submissions", JSON.stringify(_pendingSubmissions)).then(
+					(res) => {
+						getPendingSubmissions();
+					}
+				);
+			},
+			onError: (err) => {
+				message.error("Connection Failed");
+				console.log("err", err);
+			},
+		});
+	};
 	return (
 		<IonPage>
 			<IonHeader>
@@ -123,6 +200,33 @@ const Surveys = () => {
 										>
 											Take Survey
 										</Button>
+										{pendingSubmissions &&
+											pendingSubmissions.filter((p: any) => p.form_type_id == survey.id)
+												.length > 0 && (
+												<Button
+													style={{ float: "right" }}
+													size="small"
+													type="primary"
+													danger
+													onClick={(e) => {
+														// setShowSurveySubmissions({
+														// 	show: true,
+														// 	data: pendingSubmissions.filter(
+														// 		(p: any) => p.form_type_id == survey.id
+														// 	),
+														// });
+														handleUploadSurveySubmissions(survey.id);
+													}}
+													icon={<UploadOutlined />}
+												>
+													Pending Submissions (
+													{
+														pendingSubmissions.filter((p: any) => p.form_type_id == survey.id)
+															.length
+													}
+													)
+												</Button>
+											)}
 									</List.Item>
 								);
 							})}
@@ -132,6 +236,10 @@ const Surveys = () => {
 					setShowSurveyModal={setShowSurveyModal}
 					showSurveyModal={showSurveyModal}
 				/>
+				{/* <SurveyModalPendingSumissions
+					setShowSurveySubmissions={setShowSurveySubmissions}
+					showSurveySubmissions={showSurveySubmissions}
+				/> */}
 			</IonContent>
 		</IonPage>
 	);
