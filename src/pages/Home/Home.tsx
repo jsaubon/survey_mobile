@@ -40,7 +40,7 @@ const Home = () => {
 	};
 
 	return (
-		<IonApp>
+		<IonPage>
 			<IonMenu side="end" contentId="main-content">
 				<IonHeader>
 					<IonToolbar>
@@ -75,8 +75,8 @@ const Home = () => {
 				</IonContent>
 			</IonMenu>
 
-			<IonPage id="main-content">{handleRenderContent()}</IonPage>
-		</IonApp>
+			<IonApp id="main-content">{handleRenderContent()}</IonApp>
+		</IonPage>
 	);
 };
 

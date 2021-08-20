@@ -101,7 +101,10 @@ const ReviewAndSubmitTab: React.FC<ApplicationProps> = ({ next, prev }) => {
 			onSuccess: (res) => {
 				console.log("res", res);
 				if (res.success) {
-					setStorage("application_barangays", JSON.stringify(res.data.barangays));
+					setStorage(
+						"application_barangays",
+						JSON.stringify(res.data.barangays)
+					);
 					setBarangays(res.data.barangays);
 					message.success("success");
 				} else {
@@ -190,7 +193,7 @@ const ReviewAndSubmitTab: React.FC<ApplicationProps> = ({ next, prev }) => {
 			onSuccess: (res) => {
 				if (res.success) {
 					setStorage("applicationData", null);
-				} else {
+					history.push("/");
 				}
 			},
 			onError: (err) => {
@@ -222,35 +225,47 @@ const ReviewAndSubmitTab: React.FC<ApplicationProps> = ({ next, prev }) => {
 							<Col xs={8}>
 								First Name: <br />
 								<Tag>
-									{applicationData.firstname ? applicationData.firstname : "N/A"}
+									{applicationData.firstname
+										? applicationData.firstname
+										: "N/A"}
 								</Tag>
 							</Col>
 
 							<Col xs={8}>
 								Middle Name: <br />
 								<Tag>
-									{applicationData.middlename ? applicationData.middlename : "N/A"}
+									{applicationData.middlename
+										? applicationData.middlename
+										: "N/A"}
 								</Tag>
 							</Col>
 
 							<Col xs={8}>
 								Last Name: <br />
-								<Tag>{applicationData.lastname ? applicationData.lastname : "N/A"}</Tag>
+								<Tag>
+									{applicationData.lastname ? applicationData.lastname : "N/A"}
+								</Tag>
 							</Col>
 
 							<Col xs={8}>
 								Extionsion: <br />
 								<Tag>
-									{applicationData.extension ? applicationData.extension : "N/A"}
+									{applicationData.extension
+										? applicationData.extension
+										: "N/A"}
 								</Tag>
 							</Col>
 							<Col xs={8}>
 								Nickname: <br />
-								<Tag>{applicationData.nickname ? applicationData.nickname : "N/A"}</Tag>
+								<Tag>
+									{applicationData.nickname ? applicationData.nickname : "N/A"}
+								</Tag>
 							</Col>
 							<Col xs={8}>
 								Nickname: <br />
-								<Tag>{applicationData.nickname ? applicationData.nickname : "N/A"}</Tag>
+								<Tag>
+									{applicationData.nickname ? applicationData.nickname : "N/A"}
+								</Tag>
 							</Col>
 							<Col xs={8}>
 								Sex: <br />
@@ -259,34 +274,43 @@ const ReviewAndSubmitTab: React.FC<ApplicationProps> = ({ next, prev }) => {
 							<Col xs={8}>
 								Civil Status: <br />
 								<Tag>
-									{applicationData.civil_status ? applicationData.civil_status : "N/A"}
+									{applicationData.civil_status
+										? applicationData.civil_status
+										: "N/A"}
 								</Tag>
 							</Col>
 							<Col xs={8}>
 								Nationality: <br />
 								<Tag>
-									{applicationData.nationality ? applicationData.nationality : "N/A"}
+									{applicationData.nationality
+										? applicationData.nationality
+										: "N/A"}
 								</Tag>
 							</Col>
 							<Col xs={8}>
 								Ethnicity: <br />
 								<Tag>
-									{applicationData.ethnicity ? applicationData.ethnicity : "N/A"}
+									{applicationData.ethnicity
+										? applicationData.ethnicity
+										: "N/A"}
 								</Tag>
 							</Col>
 							<Col xs={8}>
 								Barangay: <br />
 								<Tag>
 									{barangays.length > 0 && applicationData.barangay_id
-										? barangays.find((p: any) => p.id == applicationData.barangay_id)
-												.barangay
+										? barangays.find(
+												(p: any) => p.id == applicationData.barangay_id
+										  ).barangay
 										: "N/A"}
 								</Tag>
 							</Col>
 							<Col xs={8}>
 								Date of Birth: <br />
 								<Tag>
-									{applicationData.date_of_birth ? applicationData.date_of_birth : "N/A"}
+									{applicationData.date_of_birth
+										? applicationData.date_of_birth
+										: "N/A"}
 								</Tag>
 							</Col>
 						</Row>
@@ -306,7 +330,12 @@ const ReviewAndSubmitTab: React.FC<ApplicationProps> = ({ next, prev }) => {
 							/>
 						)}
 						<div style={{ textAlign: "center", marginTop: 20 }}>
-							<Button type="primary" htmlType="button" onClick={(e) => prev()} danger>
+							<Button
+								type="primary"
+								htmlType="button"
+								onClick={(e) => prev()}
+								danger
+							>
 								<LeftOutlined />
 								Back
 							</Button>

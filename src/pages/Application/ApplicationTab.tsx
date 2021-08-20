@@ -1,18 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { Link, useHistory } from "react-router-dom";
-import {
-	CheckCircleOutlined,
-	CloseCircleOutlined,
-	LeftOutlined,
-	Loading3QuartersOutlined,
-	LoadingOutlined,
-	PlusCircleOutlined,
-	PlusOutlined,
-	QuestionCircleOutlined,
-	RightOutlined,
-	SaveOutlined,
-	UploadOutlined,
-} from "@ant-design/icons";
+import { useHistory } from "react-router-dom";
+import { LeftOutlined, RightOutlined, UploadOutlined } from "@ant-design/icons";
 import {
 	AutoComplete,
 	Button,
@@ -21,14 +9,8 @@ import {
 	DatePicker,
 	Form,
 	Input,
-	notification,
 	Select,
 	Divider,
-	Collapse,
-	Tooltip,
-	Checkbox,
-	Space,
-	Typography,
 	Layout,
 	message,
 	Upload,
@@ -80,7 +62,9 @@ const ApplicationTab: React.FC<ApplicationProps> = ({ next, prev }) => {
 		}
 		return () => {};
 	}, [applicationData]);
+
 	const [barangays, setBarangays] = useState([]);
+
 	const {
 		data: dataBarangay,
 		isLoading: isLoadingDataBarangay,
@@ -104,7 +88,10 @@ const ApplicationTab: React.FC<ApplicationProps> = ({ next, prev }) => {
 			onSuccess: (res) => {
 				console.log("res", res);
 				if (res.success) {
-					setStorage("application_barangays", JSON.stringify(res.data.barangays));
+					setStorage(
+						"application_barangays",
+						JSON.stringify(res.data.barangays)
+					);
 					setBarangays(res.data.barangays);
 					message.success("success");
 				} else {
@@ -184,6 +171,7 @@ const ApplicationTab: React.FC<ApplicationProps> = ({ next, prev }) => {
 		});
 		return () => {};
 	}, []);
+
 	useEffect(() => {
 		if (apiUrl != "") {
 			if (apiKey != "") {
@@ -195,6 +183,7 @@ const ApplicationTab: React.FC<ApplicationProps> = ({ next, prev }) => {
 		}
 		return () => {};
 	}, [apiUrl, apiKey]);
+
 	let history = useHistory();
 	// const userData = getUserData();
 
@@ -400,8 +389,14 @@ const ApplicationTab: React.FC<ApplicationProps> = ({ next, prev }) => {
 								/>
 							}
 							<br />
-							<Upload {...handleChangeUploadPic} accept=".jpg,.png" maxCount={1}>
-								<Button icon={<UploadOutlined />}>Upload (JPG or PNG only)</Button>
+							<Upload
+								{...handleChangeUploadPic}
+								accept=".jpg,.png"
+								maxCount={1}
+							>
+								<Button icon={<UploadOutlined />}>
+									Upload (JPG or PNG only)
+								</Button>
 							</Upload>
 						</Col>
 
@@ -476,7 +471,9 @@ const ApplicationTab: React.FC<ApplicationProps> = ({ next, prev }) => {
 									style={{ width: "100%" }}
 									showSearch
 									filterOption={(input, option: any) =>
-										option.searchvalue.toLowerCase().indexOf(input.toLowerCase()) >= 0
+										option.searchvalue
+											.toLowerCase()
+											.indexOf(input.toLowerCase()) >= 0
 									}
 								>
 									<Select.Option value="Single" searchvalue="Single">
@@ -499,7 +496,9 @@ const ApplicationTab: React.FC<ApplicationProps> = ({ next, prev }) => {
 							<Form.Item label="Nationality" name="nationality">
 								<AutoComplete
 									filterOption={(input, option: any) =>
-										option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+										option.children
+											.toLowerCase()
+											.indexOf(input.toLowerCase()) >= 0
 									}
 									style={{ width: "100%" }}
 								>
@@ -507,7 +506,10 @@ const ApplicationTab: React.FC<ApplicationProps> = ({ next, prev }) => {
 										<>
 											{nationality.map((nationality: any, key) => {
 												return (
-													<AutoComplete.Option value="Afghan" key={`nationality${key}`}>
+													<AutoComplete.Option
+														value="Afghan"
+														key={`nationality${key}`}
+													>
 														{nationality.nationality}
 													</AutoComplete.Option>
 												);
@@ -540,7 +542,9 @@ const ApplicationTab: React.FC<ApplicationProps> = ({ next, prev }) => {
 									placeholder="Select barangay"
 									showSearch
 									filterOption={(input, option: any) =>
-										option.searchvalue.toLowerCase().indexOf(input.toLowerCase()) >= 0
+										option.searchvalue
+											.toLowerCase()
+											.indexOf(input.toLowerCase()) >= 0
 									}
 								>
 									{barangays &&
@@ -570,7 +574,10 @@ const ApplicationTab: React.FC<ApplicationProps> = ({ next, prev }) => {
 									},
 								]}
 							>
-								<DatePicker style={{ width: "100%" }} disabledDate={disabledDate} />
+								<DatePicker
+									style={{ width: "100%" }}
+									disabledDate={disabledDate}
+								/>
 							</Form.Item>
 						</Col>
 					</Row>
@@ -599,7 +606,12 @@ const ApplicationTab: React.FC<ApplicationProps> = ({ next, prev }) => {
                         </Col>
                     </Row> */}
 					<div className="text-right">
-						<Button type="primary" htmlType="button" onClick={(e) => prev()} danger>
+						<Button
+							type="primary"
+							htmlType="button"
+							onClick={(e) => prev()}
+							danger
+						>
 							<LeftOutlined />
 							Back
 						</Button>

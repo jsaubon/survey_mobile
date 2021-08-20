@@ -8,6 +8,8 @@ import {
 	IonBackButton,
 	IonModal,
 	IonButton,
+	IonCard,
+	IonLabel,
 } from "@ionic/react";
 import { Button, List, message } from "antd";
 import "./Surveys.css";
@@ -21,7 +23,7 @@ import { UploadOutlined } from "@ant-design/icons";
 import SurveyModalPendingSumissions from "./SurveyModalPendingSumissions";
 
 const Surveys = () => {
-	const [mobileSurveys, setMobileSurveys] = useState<any>();
+	const [mobileSurveys, setMobileSurveys] = useState([]);
 	const [pendingSubmissions, setPendingSubmissions] = useState<any>();
 	const {
 		data: dataSurveys,
@@ -154,11 +156,12 @@ const Surveys = () => {
 					(p) => p.form_type_id != form_type_id
 				);
 				console.log("_pendingSubmissions", _pendingSubmissions);
-				setStorage("pending_submissions", JSON.stringify(_pendingSubmissions)).then(
-					(res) => {
-						getPendingSubmissions();
-					}
-				);
+				setStorage(
+					"pending_submissions",
+					JSON.stringify(_pendingSubmissions)
+				).then((res) => {
+					getPendingSubmissions();
+				});
 			},
 			onError: (err) => {
 				message.error("Connection Failed");
@@ -166,6 +169,63 @@ const Surveys = () => {
 			},
 		});
 	};
+
+	const handleRenderContent = () => {
+		if (mobileSurveys.length !== 0) {
+			return mobileSurveys.map((survey: any, key: any) => {
+				return (
+					<List.Item key={key}>
+						{survey.form_type}
+						<Button
+							style={{ float: "right" }}
+							size="small"
+							type="primary"
+							onClick={(e) => {
+								setShowSurveyModal({ show: true, data: survey });
+							}}
+						>
+							Take Survey
+						</Button>
+						{pendingSubmissions &&
+							pendingSubmissions.filter((p: any) => p.form_type_id == survey.id)
+								.length > 0 && (
+								<Button
+									style={{ float: "right" }}
+									size="small"
+									type="primary"
+									danger
+									onClick={(e) => {
+										// setShowSurveySubmissions({
+										// 	show: true,
+										// 	data: pendingSubmissions.filter(
+										// 		(p: any) => p.form_type_id == survey.id
+										// 	),
+										// });
+										handleUploadSurveySubmissions(survey.id);
+									}}
+									icon={<UploadOutlined />}
+								>
+									Pending Submissions (
+									{
+										pendingSubmissions.filter(
+											(p: any) => p.form_type_id == survey.id
+										).length
+									}
+									)
+								</Button>
+							)}
+					</List.Item>
+				);
+			});
+		} else {
+			return (
+				<List.Item>
+					<IonLabel>No data</IonLabel>
+				</List.Item>
+			);
+		}
+	};
+
 	return (
 		<IonPage>
 			<IonHeader>
@@ -176,62 +236,14 @@ const Surveys = () => {
 					<IonTitle>Surveys</IonTitle>
 				</IonToolbar>
 			</IonHeader>
-			<IonContent fullscreen>
-				<IonHeader collapse="condense">
-					<IonToolbar>
-						<IonTitle size="large">Surveys</IonTitle>
-					</IonToolbar>
-				</IonHeader>
+			<IonContent>
 				{/* <ExploreContainer name="Tab 1 page" /> */}
-				<div className="container">
+				<IonCard style={{ padding: "10px" }}>
 					<List bordered loading={isLoadingSurveys}>
-						{mobileSurveys &&
-							mobileSurveys.map((survey: any, key: any) => {
-								return (
-									<List.Item key={key}>
-										{survey.form_type}
-										<Button
-											style={{ float: "right" }}
-											size="small"
-											type="primary"
-											onClick={(e) => {
-												setShowSurveyModal({ show: true, data: survey });
-											}}
-										>
-											Take Survey
-										</Button>
-										{pendingSubmissions &&
-											pendingSubmissions.filter((p: any) => p.form_type_id == survey.id)
-												.length > 0 && (
-												<Button
-													style={{ float: "right" }}
-													size="small"
-													type="primary"
-													danger
-													onClick={(e) => {
-														// setShowSurveySubmissions({
-														// 	show: true,
-														// 	data: pendingSubmissions.filter(
-														// 		(p: any) => p.form_type_id == survey.id
-														// 	),
-														// });
-														handleUploadSurveySubmissions(survey.id);
-													}}
-													icon={<UploadOutlined />}
-												>
-													Pending Submissions (
-													{
-														pendingSubmissions.filter((p: any) => p.form_type_id == survey.id)
-															.length
-													}
-													)
-												</Button>
-											)}
-									</List.Item>
-								);
-							})}
+						{handleRenderContent()}
 					</List>
-				</div>
+				</IonCard>
+
 				<SurveyModal
 					setShowSurveyModal={setShowSurveyModal}
 					showSurveyModal={showSurveyModal}

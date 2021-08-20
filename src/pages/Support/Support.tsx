@@ -1,4 +1,5 @@
 import {
+	IonCard,
 	IonContent,
 	IonHeader,
 	IonPage,
@@ -15,14 +16,10 @@ const Support = () => {
 					<IonTitle>Support</IonTitle>
 				</IonToolbar>
 			</IonHeader>
-			<IonContent fullscreen>
-				<IonHeader collapse="condense">
-					<IonToolbar>
-						<IonTitle size="large">Support</IonTitle>
-					</IonToolbar>
-				</IonHeader>
-				{/* <ExploreContainer name="Tab 1 page" /> */}
-				<div className="container">test</div>
+			<IonContent>
+				<IonCard style={{ padding: "10px" }}>
+					<p> Support test</p>
+				</IonCard>
 			</IonContent>
 		</IonPage>
 	);

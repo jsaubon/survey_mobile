@@ -44,8 +44,6 @@ import { QueryClient, QueryClientProvider } from "react-query";
 import Settings from "./pages/Others/Settings/Settings";
 const queryClient = new QueryClient();
 
-const Layout = () => {};
-
 const App: React.FC = () => (
 	<QueryClientProvider client={queryClient}>
 		<IonApp>
@@ -58,7 +56,7 @@ const App: React.FC = () => (
 						<Route exact path="/application">
 							<Application />
 						</Route>
-						<Route exact path="/support">
+						<Route exact path="/supports">
 							<Support />
 						</Route>
 						<Route exact path="/others/settings">
@@ -77,19 +75,15 @@ const App: React.FC = () => (
 					<IonTabBar slot="bottom">
 						<IonTabButton tab="home" href="/home">
 							<IonIcon icon={homeOutline} />
-							<IonLabel>Home</IonLabel>
 						</IonTabButton>
 						<IonTabButton tab="application" href="/application">
 							<IonIcon icon={createOutline} />
-							<IonLabel>Application Form</IonLabel>
 						</IonTabButton>
-						<IonTabButton tab="support" href="/support">
+						<IonTabButton tab="support" href="/supports">
 							<IonIcon icon={helpCircleOutline} />
-							<IonLabel>Support</IonLabel>
 						</IonTabButton>
 						<IonTabButton tab="others" href="/others">
 							<IonIcon icon={ellipsisHorizontalCircleOutline} />
-							<IonLabel>Others</IonLabel>
 						</IonTabButton>
 					</IonTabBar>
 				</IonTabs>

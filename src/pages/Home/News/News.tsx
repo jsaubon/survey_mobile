@@ -155,7 +155,7 @@ const News = () => {
 				</IonToolbar>
 			</IonHeader>
 			<IonContent>
-				<IonCard>
+				<IonCard style={{ padding: "10px" }}>
 					<IonList>{handleRenderContent()}</IonList>
 				</IonCard>
 			</IonContent>

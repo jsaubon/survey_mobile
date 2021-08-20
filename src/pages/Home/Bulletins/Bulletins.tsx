@@ -152,9 +152,11 @@ const Bulletins = () => {
 				</IonToolbar>
 			</IonHeader>
 			<IonContent>
-				<IonGrid>
-					<IonRow>{handleRenderContent()}</IonRow>
-				</IonGrid>
+				<IonCard style={{ padding: "10px" }}>
+					<IonGrid>
+						<IonRow>{handleRenderContent()}</IonRow>
+					</IonGrid>
+				</IonCard>
 			</IonContent>
 		</>
 	);
