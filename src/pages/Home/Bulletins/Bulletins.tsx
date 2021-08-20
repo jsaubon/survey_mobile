@@ -1,14 +1,24 @@
 import { useEffect, useState } from "react";
 import { useHistory, Route } from "react-router-dom";
 import {
+	IonApp,
+	IonAvatar,
 	IonButtons,
 	IonCard,
+	IonCol,
 	IonContent,
+	IonGrid,
 	IonHeader,
+	IonIcon,
 	IonItem,
 	IonLabel,
 	IonList,
+	IonMenu,
 	IonMenuButton,
+	IonPage,
+	IonRouterLink,
+	IonRouterOutlet,
+	IonRow,
 	IonTitle,
 	IonToolbar,
 	useIonToast,
@@ -19,21 +29,26 @@ import getStorage from "../../../providers/getStorage";
 import setStorage from "../../../providers/setStorage";
 import moment from "moment";
 
-const News = () => {
+import noDataImage from "../../../assets/img/no-data.png";
+
+const Bulletins = () => {
 	const [present, dismiss] = useIonToast();
 
-	const [mobileNews, setMobileNews] = useState([]);
+	let history = useHistory();
+	const [apiUrl, setApiUrl] = useState("");
+	const [apiKey, setApiKey] = useState("");
+	const [mobileBulletins, setMobileBulletins] = useState([]);
 
 	const {
-		data: dataMobileNewsAndAnnouncements,
-		isLoading: isLoadingDataMobileNewsAndAnnouncements,
-		refetch: refetchDataMobileNewsAndAnnouncements,
-		isFetching: isFetchinDataMobileNewsAndAnnouncements,
+		data: dataMobileBulletins,
+		isLoading: isLoadingDataMobileBulletins,
+		refetch: refetchDataMobileBulletins,
+		isFetching: isFetchinDataMobileBulletins,
 	} = useQuery(
-		"news_and_announcements",
+		"bulletins",
 		() =>
 			axios
-				.get(`${apiUrl}/api/mobile/news_and_announcement`, {
+				.get(`${apiUrl}/api/mobile/mobile_bulletin`, {
 					headers: {
 						Authorization: apiKey,
 					},
@@ -47,8 +62,8 @@ const News = () => {
 			onSuccess: (res) => {
 				console.log("res", res);
 				if (res.success) {
-					setStorage("news_and_announcements", JSON.stringify(res.data));
-					setMobileNews(res.data);
+					setStorage("bulletins", JSON.stringify(res.data));
+					setMobileBulletins(res.data);
 				} else {
 					present({
 						color: "danger",
@@ -69,24 +84,16 @@ const News = () => {
 					onDidDismiss: () => console.log("dismissed"),
 					onWillDismiss: () => console.log("will dismiss"),
 				});
-				getStorage("news_and_announcements").then((res: any) => {
+
+				getStorage("bulletins").then((res: any) => {
 					if (res) {
-						console.log("failed news_and_announcements", JSON.parse(res));
-						setMobileNews(JSON.parse(res));
+						console.log("failed bulletins", JSON.parse(res));
+						setMobileBulletins(JSON.parse(res));
 					}
 				});
-				// message.error(JSON.stringify(err));
 			},
 		}
 	);
-
-	let history = useHistory();
-	const [apiUrl, setApiUrl] = useState("");
-	const [apiKey, setApiKey] = useState("");
-	const [showNewsModal, setShowNewsModal] = useState<any>({
-		show: false,
-		data: null,
-	});
 
 	useEffect(() => {
 		getStorage("api_url").then((res) => {
@@ -97,42 +104,54 @@ const News = () => {
 		});
 		return () => {};
 	}, []);
+
 	useEffect(() => {
-		if (apiUrl !== "") {
-			if (apiKey !== "") {
+		if (apiUrl != "") {
+			if (apiKey != "") {
 				console.log("apiUrl", apiUrl);
 				console.log("apiKey", apiKey);
-				refetchDataMobileNewsAndAnnouncements();
+				refetchDataMobileBulletins();
 			}
 		}
 		return () => {};
 	}, [apiUrl, apiKey]);
+
 	useEffect(() => {
 		return history.listen((location) => {
 			console.log(`You changed the page to: ${location.pathname}`);
-			if (location.pathname === "/home") {
-				refetchDataMobileNewsAndAnnouncements();
+			if (location.pathname == "/home") {
+				refetchDataMobileBulletins();
 			}
 		});
 	}, [history]);
 
 	const handleRenderContent = () => {
-		if (mobileNews.length !== 0) {
-			return mobileNews.map((news: any, key: any) => {
-				return (
-					<IonItem
-						key={key}
-						onClick={(e) => setShowNewsModal({ show: true, data: news })}
-					>
-						<IonLabel>{news.title}</IonLabel>
-					</IonItem>
-				);
-			});
+		if (mobileBulletins.length !== 0) {
+			return mobileBulletins
+				.filter(
+					(p: any) =>
+						moment(p.date_start).unix() <= moment().unix() &&
+						moment(p.date_end).unix() >= moment().unix()
+				)
+				.map((bulletin: any, bulletin_key: any) => {
+					return (
+						<IonCol>
+							<IonCard key={bulletin_key}>
+								<img
+									alt={bulletin.image_path}
+									src={apiUrl + "/" + bulletin.image_path}
+								/>
+							</IonCard>
+						</IonCol>
+					);
+				});
 		} else {
 			return (
-				<IonItem>
-					<IonLabel>No Announcement Yet</IonLabel>
-				</IonItem>
+				<IonCol>
+					<IonCard>
+						<img alt="no data" src={noDataImage} />
+					</IonCard>
+				</IonCol>
 			);
 		}
 	};
@@ -144,16 +163,16 @@ const News = () => {
 					<IonButtons slot="start">
 						<IonMenuButton />
 					</IonButtons>
-					<IonTitle>News and Announcements</IonTitle>
+					<IonTitle>Bulletins</IonTitle>
 				</IonToolbar>
 			</IonHeader>
 			<IonContent>
-				<IonCard>
-					<IonList>{handleRenderContent()}</IonList>
-				</IonCard>
+				<IonGrid>
+					<IonRow>{handleRenderContent()}</IonRow>
+				</IonGrid>
 			</IonContent>
 		</>
 	);
 };
 
-export default News;
+export default Bulletins;

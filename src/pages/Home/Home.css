@@ -1,9 +1,13 @@
-ion-slides {
-	height: 200px;
+.ionlabel-as-button {
+	cursor: pointer;
 }
-
-.newsandannouncements_icon {
-	position: relative;
-	top: 3px;
-	margin-right: 3px;
+.ionlabel-as-button.active {
+	color: #3880ff;
+}
+.ionlabel-as-button:hover {
+	color: #3880ff;
+}
+.ionlist-custom {
+	padding-top: 0px;
+	padding-bottom: 0px;
 }
