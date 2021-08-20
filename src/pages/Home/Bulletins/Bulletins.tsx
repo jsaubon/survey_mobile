@@ -120,23 +120,19 @@ const Bulletins = () => {
 				)
 				.map((bulletin: any, bulletin_key: any) => {
 					return (
-						<IonCol>
-							<IonCard key={bulletin_key}>
-								<img
-									alt={bulletin.image_path}
-									src={apiUrl + "/" + bulletin.image_path}
-								/>
-							</IonCard>
-						</IonCol>
+						<IonCard key={bulletin_key} style={{ padding: "10px" }}>
+							<img
+								alt={bulletin.image_path}
+								src={apiUrl + "/" + bulletin.image_path}
+							/>
+						</IonCard>
 					);
 				});
 		} else {
 			return (
-				<IonCol>
-					<IonCard>
-						<img alt="no data" src={noDataImage} />
-					</IonCard>
-				</IonCol>
+				<IonCard style={{ padding: "10px" }}>
+					<img alt="no data" src={noDataImage} />
+				</IonCard>
 			);
 		}
 	};
@@ -151,13 +147,7 @@ const Bulletins = () => {
 					<IonTitle>Bulletins</IonTitle>
 				</IonToolbar>
 			</IonHeader>
-			<IonContent>
-				<IonCard style={{ padding: "10px" }}>
-					<IonGrid>
-						<IonRow>{handleRenderContent()}</IonRow>
-					</IonGrid>
-				</IonCard>
-			</IonContent>
+			<IonContent>{handleRenderContent()}</IonContent>
 		</>
 	);
 };

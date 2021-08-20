@@ -21,6 +21,8 @@ import getStorage from "../../../providers/getStorage";
 import setStorage from "../../../providers/setStorage";
 import moment from "moment";
 
+import noDataImage from "../../../assets/img/no-data.png";
+
 const News = () => {
 	const [present, dismiss] = useIonToast();
 
@@ -118,29 +120,22 @@ const News = () => {
 
 	const handleRenderContent = () => {
 		if (mobileNews.length !== 0) {
-			return dataMobileNewsAndAnnouncements.data.map((news: any, key: any) => {
-				return (
-					<IonItem
-						key={key}
-						onClick={(e) => setShowNewsModal({ show: true, data: news })}
-					>
-						<IonLabel>{news.title}</IonLabel>
-					</IonItem>
-				);
-			});
-		} else {
 			return (
-				<IonItem
-					onClick={(e) =>
-						setShowNewsModal({
-							show: true,
-							data: { content: "No Announcement Yet" },
-						})
-					}
-				>
-					<IonLabel>No Announcement Yet</IonLabel>
-				</IonItem>
+				<IonList>
+					{dataMobileNewsAndAnnouncements.data.map((news: any, key: any) => {
+						return (
+							<IonItem
+								key={key}
+								onClick={(e) => setShowNewsModal({ show: true, data: news })}
+							>
+								<IonLabel>{news.title}</IonLabel>
+							</IonItem>
+						);
+					})}
+				</IonList>
 			);
+		} else {
+			return <img alt="no data" src={noDataImage} />;
 		}
 	};
 
@@ -155,9 +150,7 @@ const News = () => {
 				</IonToolbar>
 			</IonHeader>
 			<IonContent>
-				<IonCard style={{ padding: "10px" }}>
-					<IonList>{handleRenderContent()}</IonList>
-				</IonCard>
+				<IonCard style={{ padding: "10px" }}>{handleRenderContent()}</IonCard>
 			</IonContent>
 
 			<IonModal isOpen={showNewsModal.show}>
