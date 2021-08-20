@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useHistory, Route } from "react-router-dom";
 import {
+	IonButton,
 	IonButtons,
 	IonCard,
 	IonContent,
@@ -9,6 +10,7 @@ import {
 	IonLabel,
 	IonList,
 	IonMenuButton,
+	IonModal,
 	IonTitle,
 	IonToolbar,
 	useIonToast,
@@ -24,11 +26,17 @@ const News = () => {
 
 	const [mobileNews, setMobileNews] = useState([]);
 
+	let history = useHistory();
+	const [apiUrl, setApiUrl] = useState("");
+	const [apiKey, setApiKey] = useState("");
+	const [showNewsModal, setShowNewsModal] = useState<any>({
+		show: false,
+		data: null,
+	});
+
 	const {
 		data: dataMobileNewsAndAnnouncements,
-		isLoading: isLoadingDataMobileNewsAndAnnouncements,
 		refetch: refetchDataMobileNewsAndAnnouncements,
-		isFetching: isFetchinDataMobileNewsAndAnnouncements,
 	} = useQuery(
 		"news_and_announcements",
 		() =>
@@ -80,14 +88,6 @@ const News = () => {
 		}
 	);
 
-	let history = useHistory();
-	const [apiUrl, setApiUrl] = useState("");
-	const [apiKey, setApiKey] = useState("");
-	const [showNewsModal, setShowNewsModal] = useState<any>({
-		show: false,
-		data: null,
-	});
-
 	useEffect(() => {
 		getStorage("api_url").then((res) => {
 			setApiUrl(res ? res : "");
@@ -95,8 +95,8 @@ const News = () => {
 		getStorage("api_key").then((res) => {
 			setApiKey(res ? res : "");
 		});
-		return () => {};
 	}, []);
+
 	useEffect(() => {
 		if (apiUrl !== "") {
 			if (apiKey !== "") {
@@ -105,8 +105,8 @@ const News = () => {
 				refetchDataMobileNewsAndAnnouncements();
 			}
 		}
-		return () => {};
 	}, [apiUrl, apiKey]);
+
 	useEffect(() => {
 		return history.listen((location) => {
 			console.log(`You changed the page to: ${location.pathname}`);
@@ -118,7 +118,7 @@ const News = () => {
 
 	const handleRenderContent = () => {
 		if (mobileNews.length !== 0) {
-			return mobileNews.map((news: any, key: any) => {
+			return dataMobileNewsAndAnnouncements.data.map((news: any, key: any) => {
 				return (
 					<IonItem
 						key={key}
@@ -130,7 +130,14 @@ const News = () => {
 			});
 		} else {
 			return (
-				<IonItem>
+				<IonItem
+					onClick={(e) =>
+						setShowNewsModal({
+							show: true,
+							data: { content: "No Announcement Yet" },
+						})
+					}
+				>
 					<IonLabel>No Announcement Yet</IonLabel>
 				</IonItem>
 			);
@@ -152,6 +159,23 @@ const News = () => {
 					<IonList>{handleRenderContent()}</IonList>
 				</IonCard>
 			</IonContent>
+
+			<IonModal isOpen={showNewsModal.show}>
+				<IonHeader>
+					<IonToolbar>
+						<IonTitle>News and Announcements</IonTitle>
+						<IonButtons
+							slot="end"
+							onClick={() => setShowNewsModal({ show: false, data: null })}
+						>
+							Close
+						</IonButtons>
+					</IonToolbar>
+				</IonHeader>
+				<IonContent>
+					<p>{showNewsModal.data != null ? showNewsModal.data?.content : ""}</p>
+				</IonContent>
+			</IonModal>
 		</>
 	);
 };
