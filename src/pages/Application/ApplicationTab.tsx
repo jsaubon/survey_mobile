@@ -194,33 +194,33 @@ const ApplicationTab: React.FC<ApplicationProps> = ({ next, prev }) => {
 		loading: false,
 	});
 
-	// type Variables = {
-	// 	barangay_id: any;
-	// 	civil_status: any;
-	// 	date_of_birth: any;
-	// 	ethnicity: any;
-	// 	extension: any;
-	// 	firstname: any;
-	// 	lastname: any;
-	// 	middlename: any;
-	// 	nationality: any;
-	// 	nickname: any;
-	// 	picture: any;
-	// };
-	// const [submitSuccess, setSubmitSuccess] = useState(false);
-	// const [pendingSuccess, setPendingSuccess] = useState(false);
-	// const {
-	// 	mutate: mutateUpdateMemberOtherInfo,
-	// 	isLoading: isLoadingMutateUpdateMemberOtherInfo,
-	// } = useMutation((data: Variables) => {
-	// 	return axios
-	// 		.post(`${apiUrl}/api/mobile/household_member`, data, {
-	// 			headers: {
-	// 				Authorization: apiKey,
-	// 			},
-	// 		})
-	// 		.then((res) => res.data);
-	// });
+	type Variables = {
+		barangay_id: any;
+		civil_status: any;
+		date_of_birth: any;
+		ethnicity: any;
+		extension: any;
+		firstname: any;
+		lastname: any;
+		middlename: any;
+		nationality: any;
+		nickname: any;
+		picture: any;
+	};
+	const [submitSuccess, setSubmitSuccess] = useState(false);
+	const [pendingSuccess, setPendingSuccess] = useState(false);
+	const {
+		mutate: mutateUpdateMemberOtherInfo,
+		isLoading: isLoadingMutateUpdateMemberOtherInfo,
+	} = useMutation((data: Variables) => {
+		return axios
+			.post(`${apiUrl}/api/mobile/household_member`, data, {
+				headers: {
+					Authorization: apiKey,
+				},
+			})
+			.then((res) => res.data);
+	});
 
 	const handleCreateMember = (values: any) => {
 		console.log("values", values);
@@ -236,38 +236,38 @@ const ApplicationTab: React.FC<ApplicationProps> = ({ next, prev }) => {
 			next();
 		});
 
-		// mutateUpdateMemberOtherInfo(data, {
-		// 	onSuccess: (res) => {
-		// 		if (res.success) {
-		// 			message.success({
-		// 				content: "Data submitted successfully!",
-		// 				style: {
-		// 					marginTop: "20vh",
-		// 				},
-		// 			});
+		mutateUpdateMemberOtherInfo(data, {
+			onSuccess: (res) => {
+				if (res.success) {
+					message.success({
+						content: "Data submitted successfully!",
+						style: {
+							marginTop: "20vh",
+						},
+					});
 
-		// 			setBtnLoadingProceed(true);
+					// setBtnLoadingProceed(true);
 
-		// 			setTimeout(() => {
-		// 				window.location.href =
-		// 					window.location.origin + "/profile/applicant/view/" + res.data.id;
-		// 			}, 1000);
-		// 		} else {
-		// 			setBtnLoadingProceed(false);
-		// 		}
-		// 	},
-		// 	onError: (err) => {
-		// 		let _applicationData: any[] = [];
-		// 		if (applicationData) {
-		// 			_applicationData = [...applicationData];
-		// 		}
+					setTimeout(() => {
+						window.location.href =
+							window.location.origin + "/profile/applicant/view/" + res.data.id;
+					}, 1000);
+				} else {
+					// setBtnLoadingProceed(false);
+				}
+			},
+			onError: (err) => {
+				let _applicationData: any[] = [];
+				if (applicationData) {
+					_applicationData = [...applicationData];
+				}
 
-		// 		_applicationData.push(data);
-		// 		console.log("_applicationData", _applicationData);
-		// 		setStorage("applicationData", JSON.stringify(_applicationData));
-		// 		console.log("err", err);
-		// 	},
-		// });
+				_applicationData.push(data);
+				console.log("_applicationData", _applicationData);
+				setStorage("applicationData", JSON.stringify(_applicationData));
+				console.log("err", err);
+			},
+		});
 	};
 
 	function disabledDate(current: any) {

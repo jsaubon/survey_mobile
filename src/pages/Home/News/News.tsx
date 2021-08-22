@@ -121,37 +121,29 @@ const News = () => {
 	const handleRenderContent = () => {
 		if (mobileNews.length !== 0) {
 			return (
-				<IonList>
-					{dataMobileNewsAndAnnouncements.data.map((news: any, key: any) => {
-						return (
-							<IonItem
-								key={key}
-								onClick={(e) => setShowNewsModal({ show: true, data: news })}
-							>
-								<IonLabel>{news.title}</IonLabel>
-							</IonItem>
-						);
-					})}
-				</IonList>
+				<IonCard style={{ padding: "10px" }}>
+					<IonList>
+						{dataMobileNewsAndAnnouncements.data.map((news: any, key: any) => {
+							return (
+								<IonItem
+									key={key}
+									onClick={(e) => setShowNewsModal({ show: true, data: news })}
+								>
+									<IonLabel>{news.title}</IonLabel>
+								</IonItem>
+							);
+						})}
+					</IonList>
+				</IonCard>
 			);
 		} else {
-			return <img alt="no data" src={noDataImage} />;
+			return "";
 		}
 	};
 
 	return (
 		<>
-			<IonHeader>
-				<IonToolbar>
-					<IonButtons slot="start">
-						<IonMenuButton />
-					</IonButtons>
-					<IonTitle>News and Announcements</IonTitle>
-				</IonToolbar>
-			</IonHeader>
-			<IonContent>
-				<IonCard style={{ padding: "10px" }}>{handleRenderContent()}</IonCard>
-			</IonContent>
+			{handleRenderContent()}
 
 			<IonModal isOpen={showNewsModal.show}>
 				<IonHeader>

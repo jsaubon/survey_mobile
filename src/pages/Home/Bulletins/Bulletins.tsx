@@ -1,25 +1,14 @@
 import { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
-import {
-	IonButtons,
-	IonCard,
-	IonCol,
-	IonContent,
-	IonGrid,
-	IonHeader,
-	IonMenuButton,
-	IonRow,
-	IonTitle,
-	IonToolbar,
-	useIonToast,
-} from "@ionic/react";
+import { IonCard, useIonToast } from "@ionic/react";
 import { useQuery } from "react-query";
+import { Carousel } from "antd";
 import axios from "axios";
 import getStorage from "../../../providers/getStorage";
 import setStorage from "../../../providers/setStorage";
 import moment from "moment";
 
-import noDataImage from "../../../assets/img/no-data.png";
+import PCIEERDImage from "../../../assets/img/PCIEERD-PNG.png";
 
 const Bulletins = () => {
 	const [present, dismiss] = useIonToast();
@@ -120,35 +109,27 @@ const Bulletins = () => {
 				)
 				.map((bulletin: any, bulletin_key: any) => {
 					return (
-						<IonCard key={bulletin_key} style={{ padding: "10px" }}>
+						<div key={bulletin_key}>
 							<img
 								alt={bulletin.image_path}
 								src={apiUrl + "/" + bulletin.image_path}
 							/>
-						</IonCard>
+						</div>
 					);
 				});
 		} else {
 			return (
-				<IonCard style={{ padding: "10px" }}>
-					<img alt="no data" src={noDataImage} />
-				</IonCard>
+				<div>
+					<img alt="PCIEERD" src={PCIEERDImage} style={{ width: "100%" }} />
+				</div>
 			);
 		}
 	};
 
 	return (
-		<>
-			<IonHeader>
-				<IonToolbar>
-					<IonButtons slot="start">
-						<IonMenuButton />
-					</IonButtons>
-					<IonTitle>Bulletins</IonTitle>
-				</IonToolbar>
-			</IonHeader>
-			<IonContent>{handleRenderContent()}</IonContent>
-		</>
+		<IonCard style={{ padding: "10px" }}>
+			<Carousel>{handleRenderContent()}</Carousel>
+		</IonCard>
 	);
 };
 
