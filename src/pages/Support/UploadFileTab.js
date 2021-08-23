@@ -1,150 +1,136 @@
 import { useState } from "react";
 import ImgCrop from "antd-img-crop";
-import { Button, Col, message, Row, Upload } from "antd";
-import {
-	LeftOutlined,
-	PlusCircleOutlined,
-	PlusOutlined,
-	RightOutlined,
-} from "@ant-design/icons";
+import { Button, Card, Col, Divider, message, Row, Upload } from "antd";
+import { InboxOutlined, LeftOutlined, RightOutlined } from "@ant-design/icons";
 
-function getBase64(img, callback) {
+function getBase64(file, callback) {
 	const reader = new FileReader();
-	reader.addEventListener("load", () => callback(reader.result));
-	reader.readAsDataURL(img);
+	reader.readAsDataURL(file);
+	reader.onload = () => callback(reader.result);
 }
 
 const UploadFileTab = (props) => {
 	const [fileList, setFileList] = useState([]);
-	const [videoList, setVideoList] = useState([]);
+	const [fileListPreview, setFileListPreview] = useState([]);
 
-	const beforeUpload = (file) => {
-		let error = false;
+	const uploadProps = {
+		name: "files",
+		multiple: true,
+		showUploadList: false,
+		beforeUpload(file) {
+			let error = false;
 
-		const isValid = file.type === "image/jpeg" || file.type === "image/png";
+			const isValid =
+				file.type === "image/jpeg" ||
+				file.type === "image/png" ||
+				file.type === "video/mp4";
 
-		if (!isValid) {
-			message.error("You can only upload JPG or PNG file!");
-			error = Upload.LIST_IGNORE;
-		}
+			if (!isValid) {
+				message.error("You can only upload JPG or PNG or MP4 file!");
+				error = Upload.LIST_IGNORE;
+			}
 
-		return error;
-	};
-
-	const onChange = ({ fileList: newFileList }) => {
-		setFileList(newFileList);
-		props.setDataPreview({ ...props.dataPreview, fileList: newFileList });
-	};
-
-	const onPreview = async (file) => {
-		let src = file.url;
-
-		if (!src && !file.type === "video/mp4") {
-			src = await new Promise((resolve) => {
-				const reader = new FileReader();
-				reader.readAsDataURL(file.originFileObj);
-				reader.onload = () => resolve(reader.result);
+			return error;
+		},
+		onChange(info) {
+			console.log("info", info);
+			setFileList(info.fileList);
+			setFileListPreview([]);
+			info.fileList.map((item) => {
+				getBase64(item.originFileObj, (res) => {
+					let newData = { src: res, type: item.type, name: item.name };
+					setFileListPreview((fileListPreview) => [
+						...fileListPreview,
+						newData,
+					]);
+				});
+				return "";
 			});
-
-			const image = new Image();
-			image.src = src;
-			const imgWindow = window.open(src);
-			imgWindow.document.write(image.outerHTML);
-		}
+		},
+		onDrop(e) {
+			// console.log("Dropped files", e.dataTransfer.files);
+		},
 	};
 
-	const beforeUploadVideo = (file) => {
-		setVideoList(null);
-		let error = false;
+	const handleRenderFileList = () => {
+		if (fileList.length !== 0) {
+			return (
+				<Col span={24} style={{ marginBottom: "10px" }}>
+					<Card>
+						<Row gutter={12}>
+							{fileListPreview.map((item, index) => {
+								console.log("item, index", item, index);
 
-		const isValid = file.type === "video/mp4";
-
-		if (!isValid) {
-			message.error("You can only upload MP4 file!");
-			error = Upload.LIST_IGNORE;
+								if (item.type === "video/mp4") {
+									return (
+										<Col span={12} key={index}>
+											<video style={{ width: "100%" }} controls>
+												<source src={item.src} />
+											</video>
+										</Col>
+									);
+								} else {
+									return (
+										<Col span={12} key={index}>
+											<img
+												alt={item.name}
+												src={item.src}
+												style={{ width: "100%", height: "100%" }}
+											/>
+										</Col>
+									);
+								}
+							})}
+						</Row>
+					</Card>
+				</Col>
+			);
+		} else {
+			return "";
 		}
-
-		const isLt32M = file.size / 1024 / 1024 <= 32;
-
-		if (!isLt32M) {
-			message.error("Video size must smaller than or equal to 32MB!");
-			error = Upload.LIST_IGNORE;
-		}
-
-		let duration = 0;
-		let vid = document.createElement("video");
-		let fileURL = URL.createObjectURL(file);
-		vid.src = fileURL;
-
-		vid.ondurationchange = function () {
-			duration = this.duration;
-		};
-
-		let isDuration = duration <= 60;
-
-		if (!isDuration) {
-			message.error("Video duration must smaller than or equal to 60s!");
-			error = Upload.LIST_IGNORE;
-		}
-
-		return error;
-	};
-
-	const onChangeVideo = ({ fileList: newFileList }) => {
-		setVideoList(newFileList);
-		props.setDataPreview({ ...props.dataPreview, fileList: newFileList });
 	};
 
 	const handleProceed = () => {
+		props.setDataPreview({ ...props.dataPreview, fileList });
+
 		console.log("====================================");
 		console.log("props.dataPreview", props.dataPreview);
+		console.log("====================================");
+		console.log("====================================");
+		console.log("fileList", fileList);
 		console.log("====================================");
 	};
 
 	return (
 		<Row>
-			<Col span={24}>
-				<ImgCrop rotate>
-					<Upload
-						listType="picture-card"
-						fileList={fileList}
-						beforeUpload={beforeUpload}
-						onChange={onChange}
-						onPreview={onPreview}
-					>
-						{"+ Upload"}
-					</Upload>
-				</ImgCrop>
+			<Col span={24} style={{ marginBottom: "10px" }}>
+				<Upload.Dragger {...uploadProps}>
+					<p className="ant-upload-drag-icon">
+						<InboxOutlined />
+					</p>
+					<p className="ant-upload-text">
+						Click or drag file to this area to upload
+					</p>
+					<p className="ant-upload-hint">
+						Support for a single or bulk upload. Strictly prohibit from
+						uploading company data or other band files
+					</p>
+				</Upload.Dragger>
 			</Col>
-			<Col span={24}>
-				<Upload
-					listType="picture-card"
-					// fileList={videoList}
-					className="avatar-uploader"
-					showUploadList={false}
-					beforeUpload={beforeUploadVideo}
-					onChange={onChangeVideo}
-				>
-					{videoList &&
-						videoList.map((item, index) => {
-							const fileVideo = getBase64(item, (videoUrl) => videoUrl);
 
-							return (
-								<video key={index} style={{ width: "100%" }} controls>
-									<source src={fileVideo} />
-								</video>
-							);
-						})}
-					{"+ Upload"}
-				</Upload>
-			</Col>
+			{handleRenderFileList()}
+
 			<Col span={24}>
 				<Button type="primary" onClick={(e) => props.prev()} danger>
 					<LeftOutlined />
 					Back
 				</Button>
-				<Button type="primary" onClick={() => handleProceed()}>
-					Proceed <RightOutlined />
+				<Button
+					type="primary"
+					onClick={() => handleProceed()}
+					style={{ marginLeft: "10px" }}
+				>
+					Submit <RightOutlined />
 				</Button>
 			</Col>
 		</Row>
