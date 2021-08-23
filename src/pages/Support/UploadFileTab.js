@@ -1,7 +1,17 @@
-import { useState } from "react";
-import ImgCrop from "antd-img-crop";
-import { Button, Card, Col, Divider, message, Row, Upload } from "antd";
-import { InboxOutlined, LeftOutlined, RightOutlined } from "@ant-design/icons";
+import { useEffect, useState } from "react";
+import { useHistory } from "react-router-dom";
+import { useMutation } from "react-query";
+import { Button, Card, Col, message, Modal, Row, Upload } from "antd";
+import {
+	ExclamationCircleOutlined,
+	InboxOutlined,
+	LeftOutlined,
+	RightOutlined,
+} from "@ant-design/icons";
+
+import axios from "axios";
+import getStorage from "../../providers/getStorage";
+import setStorage from "../../providers/setStorage";
 
 function getBase64(file, callback) {
 	const reader = new FileReader();
@@ -9,9 +19,37 @@ function getBase64(file, callback) {
 	reader.onload = () => callback(reader.result);
 }
 
+const { confirm } = Modal;
+
 const UploadFileTab = (props) => {
 	const [fileList, setFileList] = useState([]);
 	const [fileListPreview, setFileListPreview] = useState([]);
+	const [apiUrl, setApiUrl] = useState("");
+	const [apiKey, setApiKey] = useState("");
+	let history = useHistory();
+
+	type Variables = {
+		complainant_name: any,
+		complain: any,
+		contact_no: any,
+		email_address: any,
+		barangay_id: any,
+		files: any,
+	};
+	const {
+		mutate: mutateCreateComplain,
+		isLoading: isLoadingCreateComplain,
+		isError: isErrorCreateComplain,
+		isSuccess: isSuccessCreateComplain,
+	} = useMutation((data: Variables) => {
+		return axios
+			.post(`${apiUrl}/api/mobile/complain`, data, {
+				headers: {
+					Authorization: apiKey,
+				},
+			})
+			.then((res) => res.data);
+	});
 
 	const uploadProps = {
 		name: "files",
@@ -52,6 +90,67 @@ const UploadFileTab = (props) => {
 		},
 	};
 
+	const handleProceed = () => {
+		if (fileList && fileList.length !== 0) {
+			confirm({
+				title: "Do you want to submit these data?",
+				icon: <ExclamationCircleOutlined />,
+				content: "",
+				onOk() {
+					props.setDataPreview({ ...props.dataPreview, fileList });
+
+					const data = new FormData();
+					if (props.dataPreview && props.dataPreview.complainant_name) {
+						data.append("complainant_name", props.dataPreview.complainant_name);
+					}
+					if (props.dataPreview && props.dataPreview.complain) {
+						data.append("complain", props.dataPreview.complain);
+					}
+					if (props.dataPreview && props.dataPreview.contact_no) {
+						data.append("contact_no", props.dataPreview.contact_no);
+					}
+					if (props.dataPreview && props.dataPreview.email_address) {
+						data.append("email_address", props.dataPreview.email_address);
+					}
+					if (props.dataPreview && props.dataPreview.barangay_id) {
+						data.append("barangay_id", props.dataPreview.barangay_id);
+					}
+
+					data.append("countFiles", fileList.length);
+
+					if (fileList.length !== 0) {
+						for (let i = 0; i < fileList.length; i++) {
+							const el = fileList[i];
+							data.append("files_" + i, el.originFileObj, el.name);
+						}
+					}
+
+					mutateCreateComplain(data, {
+						onSuccess: (res) => {
+							if (res.success) {
+								setStorage("complainData", null);
+								history.push("/");
+							}
+						},
+						onError: (err) => {
+							console.log("err", err);
+						},
+					});
+				},
+				onCancel() {
+					console.log("Cancel");
+				},
+			});
+		}
+
+		console.log("====================================");
+		console.log("props.dataPreview", props.dataPreview);
+		console.log("====================================");
+		console.log("====================================");
+		console.log("fileList", fileList);
+		console.log("====================================");
+	};
+
 	const handleRenderFileList = () => {
 		if (fileList.length !== 0) {
 			return (
@@ -90,16 +189,20 @@ const UploadFileTab = (props) => {
 		}
 	};
 
-	const handleProceed = () => {
-		props.setDataPreview({ ...props.dataPreview, fileList });
-
-		console.log("====================================");
-		console.log("props.dataPreview", props.dataPreview);
-		console.log("====================================");
-		console.log("====================================");
-		console.log("fileList", fileList);
-		console.log("====================================");
-	};
+	useEffect(() => {
+		getStorage("api_url").then((res) => {
+			setApiUrl(res ? res : "");
+		});
+		getStorage("api_key").then((res) => {
+			setApiKey(res ? res : "");
+		});
+		getStorage("complainData").then((res) => {
+			if (res) {
+				props.setDataPreview(JSON.parse(res));
+			}
+		});
+		return () => {};
+	}, []);
 
 	return (
 		<Row>
@@ -121,7 +224,12 @@ const UploadFileTab = (props) => {
 			{handleRenderFileList()}
 
 			<Col span={24}>
-				<Button type="primary" onClick={(e) => props.prev()} danger>
+				<Button
+					type="primary"
+					onClick={(e) => props.prev()}
+					danger
+					loading={isLoadingCreateComplain}
+				>
 					<LeftOutlined />
 					Back
 				</Button>
@@ -129,6 +237,7 @@ const UploadFileTab = (props) => {
 					type="primary"
 					onClick={() => handleProceed()}
 					style={{ marginLeft: "10px" }}
+					loading={isLoadingCreateComplain}
 				>
 					Submit <RightOutlined />
 				</Button>
