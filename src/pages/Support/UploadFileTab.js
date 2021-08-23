@@ -1,7 +1,7 @@
 import { useState } from "react";
 import ImgCrop from "antd-img-crop";
 import { Button, Col, message, Row, Upload } from "antd";
-import { LeftOutlined, PlusOutlined } from "@ant-design/icons";
+import { LeftOutlined, PlusOutlined, RightOutlined } from "@ant-design/icons";
 
 const UploadFileTab = (props) => {
 	const [fileList, setFileList] = useState([]);
@@ -69,7 +69,7 @@ const UploadFileTab = (props) => {
 					Back
 				</Button>
 				<Button type="primary" onClick={() => handleProceed()}>
-					Proceed
+					Proceed <RightOutlined />
 				</Button>
 			</Col>
 		</Row>
