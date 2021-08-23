@@ -6,14 +6,14 @@ import {
 	Form,
 	Input,
 	Row,
-	Steps,
-	Button,
 	Select,
 	message,
 	InputNumber,
+	Button,
 } from "antd";
 import axios from "axios";
 import { useQuery } from "react-query";
+import { RightOutlined } from "@ant-design/icons";
 
 const ComplainTab = (props) => {
 	const [form] = Form.useForm();
@@ -49,14 +49,14 @@ const ComplainTab = (props) => {
 						JSON.stringify(res.data.barangays)
 					);
 					setBarangays(res.data.barangays);
-					message.success("success");
+					// message.success("success");
 				} else {
 					message.error("Connected Failed");
 				}
 			},
 			onError: (err) => {
 				message.error("Connected Failed");
-				getStorage("application_barangays").then((res: any) => {
+				getStorage("application_barangays").then((res) => {
 					if (res) {
 						console.log("failed application_barangays", JSON.parse(res));
 						setBarangays(JSON.parse(res));
@@ -68,7 +68,8 @@ const ComplainTab = (props) => {
 	);
 
 	const onFinish = (values) => {
-		console.log("values", values);
+		props.setDataPreview({ ...props.dataPreview, ...values });
+		props.next();
 	};
 
 	useEffect(() => {
@@ -81,8 +82,6 @@ const ComplainTab = (props) => {
 
 		if (apiUrl !== "") {
 			if (apiKey !== "") {
-				console.log("apiUrl", apiUrl);
-				console.log("apiKey", apiKey);
 				refetchDataBarangay();
 				// refetchDataNationality();
 			}
@@ -92,7 +91,7 @@ const ComplainTab = (props) => {
 	return (
 		<Form layout="vertical" form={form} onFinish={onFinish}>
 			<Row gutter={24}>
-				<Col className="gutter-row" span={24}>
+				<Col className="gutter-row" xs={24} sm={12}>
 					<Form.Item
 						name="complainant_name"
 						label="Complainant Name"
@@ -106,7 +105,7 @@ const ComplainTab = (props) => {
 						<Input type="text" placeholder="Input" />
 					</Form.Item>
 				</Col>
-				<Col className="gutter-row" span={24}>
+				<Col className="gutter-row" xs={24} sm={12}>
 					<Form.Item
 						name="complain"
 						label="Complain"
@@ -121,7 +120,7 @@ const ComplainTab = (props) => {
 					</Form.Item>
 				</Col>
 
-				<Col className="gutter-row" span={24}>
+				<Col className="gutter-row" xs={24} sm={12}>
 					<Form.Item
 						name="contact_no"
 						label="Contact No."
@@ -136,7 +135,7 @@ const ComplainTab = (props) => {
 					</Form.Item>
 				</Col>
 
-				<Col className="gutter-row" span={24}>
+				<Col className="gutter-row" xs={24} sm={12}>
 					<Form.Item
 						name="email_address"
 						label="Email Address"
@@ -151,7 +150,7 @@ const ComplainTab = (props) => {
 					</Form.Item>
 				</Col>
 
-				<Col className="gutter-row" span={24}>
+				<Col className="gutter-row" xs={24} sm={12}>
 					<Form.Item
 						label="Barangay"
 						name="barangay_id"
@@ -188,11 +187,17 @@ const ComplainTab = (props) => {
 					</Form.Item>
 				</Col>
 
-				<Col className="gutter-row" span={24}>
+				<Col className="gutter-row" xs={24} sm={12}>
 					<Form.Item name="description" label="Description">
 						{/* <Input name="description" type="text" /> */}
 						<Input.TextArea rows={5} placeholder="Input" />
 					</Form.Item>
+				</Col>
+
+				<Col className="gutter-row" xs={24} sm={24}>
+					<Button type="primary" htmlType="submit">
+						Proceed <RightOutlined />
+					</Button>
 				</Col>
 			</Row>
 		</Form>

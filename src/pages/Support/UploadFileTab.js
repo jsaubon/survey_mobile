@@ -1,18 +1,21 @@
 import { useState } from "react";
 import ImgCrop from "antd-img-crop";
-import { message, Upload } from "antd";
-import { PlusOutlined } from "@ant-design/icons";
+import { Button, Col, message, Row, Upload } from "antd";
+import { LeftOutlined, PlusOutlined } from "@ant-design/icons";
 
-const UploadFileTab = () => {
+const UploadFileTab = (props) => {
 	const [fileList, setFileList] = useState([]);
 
 	const beforeUpload = (file) => {
-		let error;
+		let error = false;
 
-		const isJPG = file.type === "image/jpeg" || file.type === "image/png";
+		const isValid =
+			file.type === "image/jpeg" ||
+			file.type === "image/png" ||
+			file.type === "video/mp4";
 
-		if (!isJPG) {
-			message.error("You can only upload JPG or PNG file!");
+		if (!isValid) {
+			message.error("You can only upload JPG, PNG or mp4 file!");
 			error = Upload.LIST_IGNORE;
 		}
 
@@ -21,6 +24,7 @@ const UploadFileTab = () => {
 
 	const onChange = ({ fileList: newFileList }) => {
 		setFileList(newFileList);
+		props.setDataPreview({ ...props.dataPreview, fileList: newFileList });
 	};
 
 	const onPreview = async (file) => {
@@ -38,18 +42,37 @@ const UploadFileTab = () => {
 		imgWindow.document.write(image.outerHTML);
 	};
 
+	const handleProceed = () => {
+		console.log("====================================");
+		console.log("props.dataPreview", props.dataPreview);
+		console.log("====================================");
+	};
+
 	return (
-		<ImgCrop rotate>
-			<Upload
-				listType="picture-card"
-				fileList={fileList}
-				beforeUpload={beforeUpload}
-				onChange={onChange}
-				onPreview={onPreview}
-			>
-				{fileList.length < 5 && "+ Upload"}
-			</Upload>
-		</ImgCrop>
+		<Row>
+			<Col span={24}>
+				<ImgCrop rotate>
+					<Upload
+						listType="picture-card"
+						fileList={fileList}
+						beforeUpload={beforeUpload}
+						onChange={onChange}
+						onPreview={onPreview}
+					>
+						{fileList.length < 5 && "+ Upload"}
+					</Upload>
+				</ImgCrop>
+			</Col>
+			<Col span={24}>
+				<Button type="primary" onClick={(e) => props.prev()} danger>
+					<LeftOutlined />
+					Back
+				</Button>
+				<Button type="primary" onClick={() => handleProceed()}>
+					Proceed
+				</Button>
+			</Col>
+		</Row>
 	);
 };
 
