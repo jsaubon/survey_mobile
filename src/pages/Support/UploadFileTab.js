@@ -97,8 +97,6 @@ const UploadFileTab = (props) => {
 				icon: <ExclamationCircleOutlined />,
 				content: "",
 				onOk() {
-					props.setDataPreview({ ...props.dataPreview, fileList });
-
 					const data = new FormData();
 					if (props.dataPreview && props.dataPreview.complainant_name) {
 						data.append("complainant_name", props.dataPreview.complainant_name);
@@ -125,19 +123,25 @@ const UploadFileTab = (props) => {
 						}
 					}
 
+					setStorage("complainData", JSON.stringify(data));
+
 					mutateCreateComplain(data, {
 						onSuccess: (res) => {
 							if (res.success) {
+								message.success("Send successfully!");
 								setStorage("complainData", null);
 								history.push("/");
 							}
 						},
 						onError: (err) => {
+							message.error(err);
 							console.log("err", err);
+							setStorage("complainData", JSON.stringify(data));
 						},
 					});
 				},
 				onCancel() {
+					message.error("Cancel");
 					console.log("Cancel");
 				},
 			});
