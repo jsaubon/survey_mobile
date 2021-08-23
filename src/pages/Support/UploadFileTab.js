@@ -54,11 +54,12 @@ const UploadFileTab = (props) => {
 	};
 
 	const beforeUploadVideo = (file) => {
+		setVideoList(null);
 		let error = false;
 
-		const isJpgOrPng = file.type === "video/mp4";
+		const isValid = file.type === "video/mp4";
 
-		if (!isJpgOrPng) {
+		if (!isValid) {
 			message.error("You can only upload MP4 file!");
 			error = Upload.LIST_IGNORE;
 		}
@@ -118,12 +119,22 @@ const UploadFileTab = (props) => {
 			<Col span={24}>
 				<Upload
 					listType="picture-card"
-					fileList={videoList}
+					// fileList={videoList}
 					className="avatar-uploader"
 					showUploadList={false}
 					beforeUpload={beforeUploadVideo}
 					onChange={onChangeVideo}
 				>
+					{videoList &&
+						videoList.map((item, index) => {
+							const fileVideo = getBase64(item, (videoUrl) => videoUrl);
+
+							return (
+								<video key={index} style={{ width: "100%" }} controls>
+									<source src={fileVideo} />
+								</video>
+							);
+						})}
 					{"+ Upload"}
 				</Upload>
 			</Col>
