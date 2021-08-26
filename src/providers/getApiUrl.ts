@@ -1,4 +1,7 @@
+import getEnvironment from "./getEnvironment";
+
 export default function getApiUrl() {
-  let apiUrl = "http://dost.test";
-  return apiUrl;
+	return getEnvironment() === "LOCAL"
+		? "http://127.0.0.1:8000"
+		: "http://dost.test";
 }

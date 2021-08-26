@@ -21,6 +21,8 @@ import getStorage from "../../../providers/getStorage";
 import setStorage from "../../../providers/setStorage";
 import { UploadOutlined } from "@ant-design/icons";
 import SurveyModalPendingSumissions from "./SurveyModalPendingSumissions";
+import getApiUrl from "../../../providers/getApiUrl";
+import getApiKey from "../../../providers/getApiKey";
 
 const Surveys = () => {
 	const [mobileSurveys, setMobileSurveys] = useState([]);
@@ -34,9 +36,9 @@ const Surveys = () => {
 		"surveys",
 		() =>
 			axios
-				.get(`${apiUrl}/api/mobile/form_type?surveys=1`, {
+				.get(`${getApiUrl()}/api/mobile/form_type?surveys=1`, {
 					headers: {
-						Authorization: apiKey,
+						Authorization: getApiKey(),
 					},
 				})
 				.then((res) => res.data),
@@ -83,24 +85,9 @@ const Surveys = () => {
 		return () => {};
 	}, [pendingSubmissions]);
 
-	const [apiUrl, setApiUrl] = useState("");
-	const [apiKey, setApiKey] = useState("");
-
 	useEffect(() => {
-		getStorage("api_url").then((res) => {
-			setApiUrl(res ? res : "");
-		});
-		getStorage("api_key").then((res) => {
-			setApiKey(res ? res : "");
-		});
-		return () => {};
+		refetchDataSurveys();
 	}, []);
-	useEffect(() => {
-		if (apiUrl != "" && apiKey != "") {
-			refetchDataSurveys();
-		}
-		return () => {};
-	}, [apiUrl, apiKey]);
 
 	const [showSurveyModal, setShowSurveyModal] = useState({
 		show: false,
@@ -124,9 +111,9 @@ const Surveys = () => {
 	const [submitSuccess, setSubmitSuccess] = useState(false);
 	const mutationSurverAnswer = useMutation((data: Variables) => {
 		return axios
-			.post(`${apiUrl}/api/mobile/form_type_answer`, data, {
+			.post(`${getApiUrl()}/api/mobile/form_type_answer`, data, {
 				headers: {
-					Authorization: apiKey,
+					Authorization: getApiKey(),
 				},
 			})
 			.then((res) => res.data);

@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useHistory, Route } from "react-router-dom";
 import {
-	IonButton,
 	IonButtons,
 	IonCard,
 	IonContent,
@@ -9,7 +8,6 @@ import {
 	IonItem,
 	IonLabel,
 	IonList,
-	IonMenuButton,
 	IonModal,
 	IonTitle,
 	IonToolbar,
@@ -19,9 +17,11 @@ import { useQuery } from "react-query";
 import axios from "axios";
 import getStorage from "../../../providers/getStorage";
 import setStorage from "../../../providers/setStorage";
-import moment from "moment";
+// import moment from "moment";
 
-import noDataImage from "../../../assets/img/no-data.png";
+// import noDataImage from "../../../assets/img/no-data.png";
+import getApiUrl from "../../../providers/getApiUrl";
+import getApiKey from "../../../providers/getApiKey";
 
 const News = () => {
 	const [present, dismiss] = useIonToast();
@@ -29,8 +29,6 @@ const News = () => {
 	const [mobileNews, setMobileNews] = useState([]);
 
 	let history = useHistory();
-	const [apiUrl, setApiUrl] = useState("");
-	const [apiKey, setApiKey] = useState("");
 	const [showNewsModal, setShowNewsModal] = useState<any>({
 		show: false,
 		data: null,
@@ -43,9 +41,9 @@ const News = () => {
 		"news_and_announcements",
 		() =>
 			axios
-				.get(`${apiUrl}/api/mobile/news_and_announcement`, {
+				.get(`${getApiUrl()}/api/mobile/news_and_announcement`, {
 					headers: {
-						Authorization: apiKey,
+						Authorization: getApiKey(),
 					},
 				})
 				.then((res) => res.data),
@@ -91,23 +89,11 @@ const News = () => {
 	);
 
 	useEffect(() => {
-		getStorage("api_url").then((res) => {
-			setApiUrl(res ? res : "");
-		});
-		getStorage("api_key").then((res) => {
-			setApiKey(res ? res : "");
-		});
-	}, []);
+		refetchDataMobileNewsAndAnnouncements();
 
-	useEffect(() => {
-		if (apiUrl !== "") {
-			if (apiKey !== "") {
-				console.log("apiUrl", apiUrl);
-				console.log("apiKey", apiKey);
-				refetchDataMobileNewsAndAnnouncements();
-			}
-		}
-	}, [apiUrl, apiKey]);
+		console.log("getApiUrl()", getApiUrl());
+		console.log("getApiKey()", getApiKey());
+	}, []);
 
 	useEffect(() => {
 		return history.listen((location) => {

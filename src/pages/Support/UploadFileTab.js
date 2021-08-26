@@ -12,6 +12,8 @@ import {
 import axios from "axios";
 import getStorage from "../../providers/getStorage";
 import setStorage from "../../providers/setStorage";
+import getApiUrl from "../../providers/getApiUrl";
+import getApiKey from "../../providers/getApiKey";
 
 function getBase64(file, callback) {
 	const reader = new FileReader();
@@ -24,8 +26,6 @@ const { confirm } = Modal;
 const UploadFileTab = (props) => {
 	const [fileList, setFileList] = useState([]);
 	const [fileListPreview, setFileListPreview] = useState([]);
-	const [apiUrl, setApiUrl] = useState("");
-	const [apiKey, setApiKey] = useState("");
 	let history = useHistory();
 
 	type Variables = {
@@ -34,7 +34,7 @@ const UploadFileTab = (props) => {
 		contact_no: any,
 		email_address: any,
 		barangay_id: any,
-		files: any,
+		countFiles: any,
 	};
 	const {
 		mutate: mutateCreateComplain,
@@ -43,9 +43,9 @@ const UploadFileTab = (props) => {
 		isSuccess: isSuccessCreateComplain,
 	} = useMutation((data: Variables) => {
 		return axios
-			.post(`${apiUrl}/api/mobile/complain`, data, {
+			.post(`${getApiUrl()}/api/mobile/complain`, data, {
 				headers: {
-					Authorization: apiKey,
+					Authorization: getApiKey(),
 				},
 			})
 			.then((res) => res.data);
@@ -194,12 +194,6 @@ const UploadFileTab = (props) => {
 	};
 
 	useEffect(() => {
-		getStorage("api_url").then((res) => {
-			setApiUrl(res ? res : "");
-		});
-		getStorage("api_key").then((res) => {
-			setApiKey(res ? res : "");
-		});
 		getStorage("complainData").then((res) => {
 			if (res) {
 				props.setDataPreview(JSON.parse(res));

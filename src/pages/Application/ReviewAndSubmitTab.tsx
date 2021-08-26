@@ -46,6 +46,8 @@ import axios from "axios";
 import getStorage from "../../providers/getStorage";
 import setStorage from "../../providers/setStorage";
 import { useMutation, useQuery } from "react-query";
+import getApiKey from "../../providers/getApiKey";
+import getApiUrl from "../../providers/getApiUrl";
 
 const videoConstraints = {
 	width: 220,
@@ -87,9 +89,9 @@ const ReviewAndSubmitTab: React.FC<ApplicationProps> = ({ next, prev }) => {
 		"application_barangays",
 		() =>
 			axios
-				.get(`${apiUrl}/api/mobile/barangay`, {
+				.get(`${getApiUrl()}/api/mobile/barangay`, {
 					headers: {
-						Authorization: apiKey,
+						Authorization: getApiKey(),
 					},
 				})
 				.then((res) => res.data),
@@ -124,16 +126,7 @@ const ReviewAndSubmitTab: React.FC<ApplicationProps> = ({ next, prev }) => {
 		}
 	);
 
-	const [apiUrl, setApiUrl] = useState("");
-	const [apiKey, setApiKey] = useState("");
-
 	useEffect(() => {
-		getStorage("api_url").then((res) => {
-			setApiUrl(res ? res : "");
-		});
-		getStorage("api_key").then((res) => {
-			setApiKey(res ? res : "");
-		});
 		getStorage("applicationData").then((res) => {
 			if (res) {
 				setApplicationData(JSON.parse(res));
@@ -142,15 +135,8 @@ const ReviewAndSubmitTab: React.FC<ApplicationProps> = ({ next, prev }) => {
 		return () => {};
 	}, []);
 	useEffect(() => {
-		if (apiUrl != "") {
-			if (apiKey != "") {
-				console.log("apiUrl", apiUrl);
-				console.log("apiKey", apiKey);
-				refetchDataBarangay();
-			}
-		}
-		return () => {};
-	}, [apiUrl, apiKey]);
+		refetchDataBarangay();
+	}, []);
 	let history = useHistory();
 
 	const [formMemOtherInfo] = Form.useForm();
@@ -180,9 +166,9 @@ const ReviewAndSubmitTab: React.FC<ApplicationProps> = ({ next, prev }) => {
 		isSuccess: isSuccessMutateUpdateMemberOtherInfo,
 	} = useMutation((data: Variables) => {
 		return axios
-			.post(`${apiUrl}/api/mobile/household_member`, data, {
+			.post(`${getApiUrl()}/api/mobile/household_member`, data, {
 				headers: {
-					Authorization: apiKey,
+					Authorization: getApiKey(),
 				},
 			})
 			.then((res) => res.data);

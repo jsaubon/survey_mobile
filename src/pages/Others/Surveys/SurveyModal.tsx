@@ -1,31 +1,19 @@
 import React, { useEffect, useState } from "react";
-import {
-	IonContent,
-	IonHeader,
-	IonPage,
-	IonTitle,
-	IonToolbar,
-	IonButtons,
-	IonBackButton,
-	IonModal,
-} from "@ionic/react";
+import { IonModal } from "@ionic/react";
 import {
 	Button,
 	Card,
 	Col,
-	Collapse,
 	Form,
 	Input,
 	Row,
 	Tooltip,
-	InputNumber,
 	Radio,
 	Checkbox,
 	Select,
 	DatePicker,
 	Steps,
 	Divider,
-	message,
 	Alert,
 } from "antd";
 import { QuestionCircleOutlined } from "@ant-design/icons";
@@ -33,6 +21,8 @@ import { useMutation } from "react-query";
 import axios from "axios";
 import getStorage from "../../../providers/getStorage";
 import setStorage from "../../../providers/setStorage";
+import getApiUrl from "../../../providers/getApiUrl";
+import getApiKey from "../../../providers/getApiKey";
 interface surveyProps {
 	setShowSurveyModal: any;
 	showSurveyModal: any;
@@ -51,24 +41,6 @@ const SurveyModal: React.FC<surveyProps> = ({
 		return () => {};
 	}, []);
 
-	const [apiUrl, setApiUrl] = useState("");
-	const [apiKey, setApiKey] = useState("");
-
-	useEffect(() => {
-		getStorage("api_url").then((res) => {
-			setApiUrl(res ? res : "");
-		});
-		getStorage("api_key").then((res) => {
-			setApiKey(res ? res : "");
-		});
-		return () => {};
-	}, []);
-
-	useEffect(() => {
-		console.log("showSurveyModalasda", showSurveyModal);
-		return () => {};
-	}, [showSurveyModal]);
-
 	const [stepActiveKey, setStepActiveKey] = useState(0);
 
 	const handleOnChangeQuestionCategory = (e: any) => {
@@ -86,9 +58,9 @@ const SurveyModal: React.FC<surveyProps> = ({
 	const [pendingSuccess, setPendingSuccess] = useState(false);
 	const mutationSurverAnswer = useMutation((data: Variables) => {
 		return axios
-			.post(`${apiUrl}/api/mobile/form_type_answer`, data, {
+			.post(`${getApiUrl()}/api/mobile/form_type_answer`, data, {
 				headers: {
-					Authorization: apiKey,
+					Authorization: getApiKey(),
 				},
 			})
 			.then((res) => res.data);
@@ -127,7 +99,9 @@ const SurveyModal: React.FC<surveyProps> = ({
 				<Card
 					title={showSurveyModal.data && showSurveyModal.data.form_type}
 					extra={
-						<Button onClick={(e) => setShowSurveyModal({ show: false, data: null })}>
+						<Button
+							onClick={(e) => setShowSurveyModal({ show: false, data: null })}
+						>
 							Close
 						</Button>
 					}
@@ -153,7 +127,7 @@ const SurveyModal: React.FC<surveyProps> = ({
 						Object.values(showSurveyModal.data.question_categories).map(
 							(questionCategory: any, key: any) => {
 								return (
-									<div className={`${stepActiveKey == key ? "" : "hide"}`}>
+									<div className={`${stepActiveKey === key ? "" : "hide"}`}>
 										<h1>{questionCategory.category}</h1>
 										<Form
 											onFinish={(values) => handleSubmitCategory(values)}
@@ -161,7 +135,8 @@ const SurveyModal: React.FC<surveyProps> = ({
 										>
 											{questionCategory.questions.map(
 												(question: any, question_key: any) => {
-													let question_input = generateQuestionOptions(question);
+													let question_input =
+														generateQuestionOptions(question);
 
 													return (
 														<Card
@@ -178,11 +153,12 @@ const SurveyModal: React.FC<surveyProps> = ({
 																				__html: question.question,
 																			}}
 																		></span>{" "}
-																		{question.question_tips && question.question_tips != "" && (
-																			<Tooltip title={question.question_tips}>
-																				<QuestionCircleOutlined />
-																			</Tooltip>
-																		)}
+																		{question.question_tips &&
+																			question.question_tips !== "" && (
+																				<Tooltip title={question.question_tips}>
+																					<QuestionCircleOutlined />
+																				</Tooltip>
+																			)}
 																	</b>
 																	<br />
 																	<small>
@@ -227,8 +203,9 @@ const SurveyModal: React.FC<surveyProps> = ({
 						)}
 
 					{showSurveyModal.data &&
-						stepActiveKey ==
-							Object.values(showSurveyModal.data.question_categories).length && (
+						stepActiveKey ===
+							Object.values(showSurveyModal.data.question_categories)
+								.length && (
 							<>
 								<div>
 									<h1>Review & Submit</h1>
@@ -239,7 +216,8 @@ const SurveyModal: React.FC<surveyProps> = ({
 													let answer_key = Object.keys(formValues).indexOf(
 														`qid_${_question.id}`
 													);
-													let answer_value = Object.values(formValues)[answer_key];
+													let answer_value =
+														Object.values(formValues)[answer_key];
 													return (
 														<div>
 															{_question.question}: {answer_value}
@@ -263,7 +241,10 @@ const SurveyModal: React.FC<surveyProps> = ({
 									{submitSuccess || pendingSuccess ? (
 										<>
 											{submitSuccess && (
-												<Alert message="Survey Successfully Submitted" type="success" />
+												<Alert
+													message="Survey Successfully Submitted"
+													type="success"
+												/>
 											)}
 											{pendingSuccess && (
 												<Alert

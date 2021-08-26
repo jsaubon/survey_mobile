@@ -14,12 +14,12 @@ import {
 import axios from "axios";
 import { useQuery } from "react-query";
 import { RightOutlined } from "@ant-design/icons";
+import getApiUrl from "../../providers/getApiUrl";
+import getApiKey from "../../providers/getApiKey";
 
 const ComplainTab = (props) => {
 	const [form] = Form.useForm();
 	const [barangays, setBarangays] = useState([]);
-	const [apiUrl, setApiUrl] = useState("");
-	const [apiKey, setApiKey] = useState("");
 
 	const {
 		data: dataBarangay,
@@ -30,9 +30,9 @@ const ComplainTab = (props) => {
 		"application_barangays",
 		() =>
 			axios
-				.get(`${apiUrl}/api/mobile/barangay`, {
+				.get(`${getApiUrl()}/api/mobile/barangay`, {
 					headers: {
-						Authorization: apiKey,
+						Authorization: getApiKey(),
 					},
 				})
 				.then((res) => res.data),
@@ -73,20 +73,8 @@ const ComplainTab = (props) => {
 	};
 
 	useEffect(() => {
-		getStorage("api_url").then((res) => {
-			setApiUrl(res ? res : "");
-		});
-		getStorage("api_key").then((res) => {
-			setApiKey(res ? res : "");
-		});
-
-		if (apiUrl !== "") {
-			if (apiKey !== "") {
-				refetchDataBarangay();
-				// refetchDataNationality();
-			}
-		}
-	}, [apiUrl, apiKey]);
+		refetchDataBarangay();
+	}, []);
 
 	return (
 		<Form layout="vertical" form={form} onFinish={onFinish}>

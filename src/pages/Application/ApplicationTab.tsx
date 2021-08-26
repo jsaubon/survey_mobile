@@ -27,6 +27,8 @@ import axios from "axios";
 import getStorage from "../../providers/getStorage";
 import setStorage from "../../providers/setStorage";
 import { useMutation, useQuery } from "react-query";
+import getApiUrl from "../../providers/getApiUrl";
+import getApiKey from "../../providers/getApiKey";
 
 const videoConstraints = {
 	width: 220,
@@ -74,9 +76,9 @@ const ApplicationTab: React.FC<ApplicationProps> = ({ next, prev }) => {
 		"application_barangays",
 		() =>
 			axios
-				.get(`${apiUrl}/api/mobile/barangay`, {
+				.get(`${getApiUrl()}/api/mobile/barangay`, {
 					headers: {
-						Authorization: apiKey,
+						Authorization: getApiKey(),
 					},
 				})
 				.then((res) => res.data),
@@ -121,9 +123,9 @@ const ApplicationTab: React.FC<ApplicationProps> = ({ next, prev }) => {
 		"application_nationalities",
 		() =>
 			axios
-				.get(`${apiUrl}/api/mobile/barangay`, {
+				.get(`${getApiUrl()}/api/mobile/barangay`, {
 					headers: {
-						Authorization: apiKey,
+						Authorization: getApiKey(),
 					},
 				})
 				.then((res) => res.data),
@@ -214,9 +216,9 @@ const ApplicationTab: React.FC<ApplicationProps> = ({ next, prev }) => {
 		isLoading: isLoadingMutateUpdateMemberOtherInfo,
 	} = useMutation((data: Variables) => {
 		return axios
-			.post(`${apiUrl}/api/mobile/household_member`, data, {
+			.post(`${getApiUrl()}/api/mobile/household_member`, data, {
 				headers: {
-					Authorization: apiKey,
+					Authorization: getApiKey(),
 				},
 			})
 			.then((res) => res.data);

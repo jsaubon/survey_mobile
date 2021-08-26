@@ -9,13 +9,13 @@ import setStorage from "../../../providers/setStorage";
 import moment from "moment";
 
 import PCIEERDImage from "../../../assets/img/PCIEERD-PNG.png";
+import getApiUrl from "../../../providers/getApiUrl";
+import getApiKey from "../../../providers/getApiKey";
 
 const Bulletins = () => {
 	const [present, dismiss] = useIonToast();
 
 	let history = useHistory();
-	const [apiUrl, setApiUrl] = useState("");
-	const [apiKey, setApiKey] = useState("");
 	const [mobileBulletins, setMobileBulletins] = useState([]);
 
 	const { data: dataMobileBulletins, refetch: refetchDataMobileBulletins } =
@@ -23,9 +23,9 @@ const Bulletins = () => {
 			"bulletins",
 			() =>
 				axios
-					.get(`${apiUrl}/api/mobile/mobile_bulletin`, {
+					.get(`${getApiUrl()}/api/mobile/mobile_bulletin`, {
 						headers: {
-							Authorization: apiKey,
+							Authorization: getApiKey(),
 						},
 					})
 					.then((res) => res.data),
@@ -71,24 +71,8 @@ const Bulletins = () => {
 		);
 
 	useEffect(() => {
-		getStorage("api_url").then((res) => {
-			setApiUrl(res ? res : "");
-		});
-		getStorage("api_key").then((res) => {
-			setApiKey(res ? res : "");
-		});
-		return () => {};
+		refetchDataMobileBulletins();
 	}, []);
-
-	useEffect(() => {
-		if (apiUrl !== "") {
-			if (apiKey !== "") {
-				console.log("apiUrl", apiUrl);
-				console.log("apiKey", apiKey);
-				refetchDataMobileBulletins();
-			}
-		}
-	}, [apiUrl, apiKey]);
 
 	useEffect(() => {
 		return history.listen((location) => {
@@ -112,7 +96,7 @@ const Bulletins = () => {
 						<div key={bulletin_key}>
 							<img
 								alt={bulletin.image_path}
-								src={apiUrl + "/" + bulletin.image_path}
+								src={getApiUrl() + "/" + bulletin.image_path}
 							/>
 						</div>
 					);
