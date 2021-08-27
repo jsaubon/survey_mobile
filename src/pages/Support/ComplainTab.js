@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
-import getStorage from "../../providers/getStorage";
-import setStorage from "../../providers/setStorage";
+
 import {
 	Col,
 	Form,
@@ -10,16 +9,47 @@ import {
 	message,
 	InputNumber,
 	Button,
+	Modal,
 } from "antd";
+import { ExclamationCircleOutlined, RightOutlined } from "@ant-design/icons";
+
 import axios from "axios";
-import { useQuery } from "react-query";
-import { RightOutlined } from "@ant-design/icons";
+import { useMutation, useQuery } from "react-query";
+import { useHistory } from "react-router-dom";
+import getStorage from "../../providers/getStorage";
+import setStorage from "../../providers/setStorage";
 import getApiUrl from "../../providers/getApiUrl";
 import getApiKey from "../../providers/getApiKey";
+
+const { confirm } = Modal;
 
 const ComplainTab = (props) => {
 	const [form] = Form.useForm();
 	const [barangays, setBarangays] = useState([]);
+	let history = useHistory();
+
+	type Variables = {
+		complainant_name: any,
+		complain: any,
+		contact_no: any,
+		email_address: any,
+		barangay_id: any,
+		countFiles: any,
+	};
+	const {
+		mutate: mutateCreateComplain,
+		isLoading: isLoadingCreateComplain,
+		isError: isErrorCreateComplain,
+		isSuccess: isSuccessCreateComplain,
+	} = useMutation((data: Variables) => {
+		return axios
+			.post(`${getApiUrl()}/api/mobile/complain`, data, {
+				headers: {
+					Authorization: getApiKey(),
+				},
+			})
+			.then((res) => res.data);
+	});
 
 	const {
 		data: dataBarangay,
@@ -69,11 +99,70 @@ const ComplainTab = (props) => {
 
 	const onFinish = (values) => {
 		props.setDataPreview({ ...props.dataPreview, ...values });
-		props.next();
+
+		confirm({
+			title: "Do you want to submit these data?",
+			icon: <ExclamationCircleOutlined />,
+			content: "",
+			onOk() {
+				const data = new FormData();
+				if (values && values.complainant_name) {
+					data.append("complainant_name", values.complainant_name);
+				}
+				if (values && values.complain) {
+					data.append("complain", values.complain);
+				}
+				if (values && values.contact_no) {
+					data.append("contact_no", values.contact_no);
+				}
+				if (values && values.email_address) {
+					data.append("email_address", values.email_address);
+				}
+				if (values && values.barangay_id) {
+					data.append("barangay_id", values.barangay_id);
+				}
+
+				data.append("countFiles", values.fileList.length);
+
+				if (props.dataPreview.fileList.length !== 0) {
+					for (let i = 0; i < props.dataPreview.fileList.length; i++) {
+						const el = props.dataPreview.fileList[i];
+						data.append("files_" + i, el.originFileObj, el.name);
+					}
+				}
+
+				setStorage("complainData", JSON.stringify(data));
+
+				mutateCreateComplain(data, {
+					onSuccess: (res) => {
+						if (res.success) {
+							message.success("Send successfully!");
+							setStorage("complainData", null);
+							history.push("/");
+						}
+					},
+					onError: (err) => {
+						message.error(err);
+						console.log("err", err);
+						setStorage("complainData", JSON.stringify(data));
+					},
+				});
+			},
+			onCancel() {
+				message.error("Cancel");
+				console.log("Cancel");
+			},
+		});
 	};
 
 	useEffect(() => {
 		refetchDataBarangay();
+
+		getStorage("complainData").then((res) => {
+			if (res) {
+				props.setDataPreview(JSON.parse(res));
+			}
+		});
 	}, []);
 
 	return (

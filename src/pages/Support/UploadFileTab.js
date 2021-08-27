@@ -1,19 +1,10 @@
-import { useEffect, useState } from "react";
-import { useHistory } from "react-router-dom";
-import { useMutation } from "react-query";
+import { useState } from "react";
 import { Button, Card, Col, message, Modal, Row, Upload } from "antd";
 import {
 	ExclamationCircleOutlined,
 	InboxOutlined,
-	LeftOutlined,
 	RightOutlined,
 } from "@ant-design/icons";
-
-import axios from "axios";
-import getStorage from "../../providers/getStorage";
-import setStorage from "../../providers/setStorage";
-import getApiUrl from "../../providers/getApiUrl";
-import getApiKey from "../../providers/getApiKey";
 
 function getBase64(file, callback) {
 	const reader = new FileReader();
@@ -26,30 +17,6 @@ const { confirm } = Modal;
 const UploadFileTab = (props) => {
 	const [fileList, setFileList] = useState([]);
 	const [fileListPreview, setFileListPreview] = useState([]);
-	let history = useHistory();
-
-	type Variables = {
-		complainant_name: any,
-		complain: any,
-		contact_no: any,
-		email_address: any,
-		barangay_id: any,
-		countFiles: any,
-	};
-	const {
-		mutate: mutateCreateComplain,
-		isLoading: isLoadingCreateComplain,
-		isError: isErrorCreateComplain,
-		isSuccess: isSuccessCreateComplain,
-	} = useMutation((data: Variables) => {
-		return axios
-			.post(`${getApiUrl()}/api/mobile/complain`, data, {
-				headers: {
-					Authorization: getApiKey(),
-				},
-			})
-			.then((res) => res.data);
-	});
 
 	const uploadProps = {
 		name: "files",
@@ -92,57 +59,16 @@ const UploadFileTab = (props) => {
 
 	const handleProceed = () => {
 		if (fileList && fileList.length !== 0) {
+			props.setDataPreview({ ...props.dataPreview, ...fileList });
+			props.next();
+		} else {
 			confirm({
-				title: "Do you want to submit these data?",
+				title: "WARNING",
 				icon: <ExclamationCircleOutlined />,
-				content: "",
+				content: "Please add files. (PNG, JPEG or MP4)",
+				cancelButtonProps: { style: { display: "none" } },
 				onOk() {
-					const data = new FormData();
-					if (props.dataPreview && props.dataPreview.complainant_name) {
-						data.append("complainant_name", props.dataPreview.complainant_name);
-					}
-					if (props.dataPreview && props.dataPreview.complain) {
-						data.append("complain", props.dataPreview.complain);
-					}
-					if (props.dataPreview && props.dataPreview.contact_no) {
-						data.append("contact_no", props.dataPreview.contact_no);
-					}
-					if (props.dataPreview && props.dataPreview.email_address) {
-						data.append("email_address", props.dataPreview.email_address);
-					}
-					if (props.dataPreview && props.dataPreview.barangay_id) {
-						data.append("barangay_id", props.dataPreview.barangay_id);
-					}
-
-					data.append("countFiles", fileList.length);
-
-					if (fileList.length !== 0) {
-						for (let i = 0; i < fileList.length; i++) {
-							const el = fileList[i];
-							data.append("files_" + i, el.originFileObj, el.name);
-						}
-					}
-
-					setStorage("complainData", JSON.stringify(data));
-
-					mutateCreateComplain(data, {
-						onSuccess: (res) => {
-							if (res.success) {
-								message.success("Send successfully!");
-								setStorage("complainData", null);
-								history.push("/");
-							}
-						},
-						onError: (err) => {
-							message.error(err);
-							console.log("err", err);
-							setStorage("complainData", JSON.stringify(data));
-						},
-					});
-				},
-				onCancel() {
-					message.error("Cancel");
-					console.log("Cancel");
+					console.log("Oks");
 				},
 			});
 		}
@@ -193,15 +119,6 @@ const UploadFileTab = (props) => {
 		}
 	};
 
-	useEffect(() => {
-		getStorage("complainData").then((res) => {
-			if (res) {
-				props.setDataPreview(JSON.parse(res));
-			}
-		});
-		return () => {};
-	}, []);
-
 	return (
 		<Row>
 			<Col span={24} style={{ marginBottom: "10px" }}>
@@ -224,20 +141,10 @@ const UploadFileTab = (props) => {
 			<Col span={24}>
 				<Button
 					type="primary"
-					onClick={(e) => props.prev()}
-					danger
-					loading={isLoadingCreateComplain}
-				>
-					<LeftOutlined />
-					Back
-				</Button>
-				<Button
-					type="primary"
 					onClick={() => handleProceed()}
 					style={{ marginLeft: "10px" }}
-					loading={isLoadingCreateComplain}
 				>
-					Submit <RightOutlined />
+					Proceed <RightOutlined />
 				</Button>
 			</Col>
 		</Row>

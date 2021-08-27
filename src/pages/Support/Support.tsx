@@ -33,7 +33,7 @@ const Support = () => {
 	const steps = [
 		{
 			content: (
-				<ComplainTab
+				<UploadFileTab
 					dataPreview={dataPreview}
 					setDataPreview={setDataPreview}
 					next={next}
@@ -43,7 +43,7 @@ const Support = () => {
 		},
 		{
 			content: (
-				<UploadFileTab
+				<ComplainTab
 					dataPreview={dataPreview}
 					setDataPreview={setDataPreview}
 					next={next}
