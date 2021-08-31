@@ -3,7 +3,7 @@ import { useHistory } from "react-router-dom";
 import { useMutation, useQuery } from "react-query";
 import axios from "axios";
 
-import "./Support.css";
+import "./Complain.css";
 
 import {
 	IonCard,
@@ -18,7 +18,7 @@ import ComplainTab from "./ComplainTab";
 import UploadFileTab from "./UploadFileTab";
 import { PlusOutlined } from "@ant-design/icons";
 
-const Support = () => {
+const Complain = () => {
 	const [current, setCurrent] = useState(0);
 	const [dataPreview, setDataPreview] = useState([]);
 
@@ -57,7 +57,7 @@ const Support = () => {
 		<IonPage>
 			<IonHeader>
 				<IonToolbar>
-					<IonTitle>Support</IonTitle>
+					<IonTitle>Complain</IonTitle>
 				</IonToolbar>
 			</IonHeader>
 			<IonContent>
@@ -75,4 +75,4 @@ const Support = () => {
 	);
 };
 
-export default Support;
+export default Complain;

@@ -57,7 +57,7 @@ const ComplainTab = (props) => {
 		refetch: refetchDataBarangay,
 		isFetching: isFetchingDataBarangay,
 	} = useQuery(
-		"application_barangays",
+		"complain_barangays",
 		() =>
 			axios
 				.get(`${getApiUrl()}/api/mobile/barangay`, {
@@ -74,10 +74,7 @@ const ComplainTab = (props) => {
 			onSuccess: (res) => {
 				console.log("res", res);
 				if (res.success) {
-					setStorage(
-						"application_barangays",
-						JSON.stringify(res.data.barangays)
-					);
+					setStorage("complain_barangays", JSON.stringify(res.data.barangays));
 					setBarangays(res.data.barangays);
 					// message.success("success");
 				} else {
@@ -86,9 +83,9 @@ const ComplainTab = (props) => {
 			},
 			onError: (err) => {
 				message.error("Connected Failed");
-				getStorage("application_barangays").then((res) => {
+				getStorage("complain_barangays").then((res) => {
 					if (res) {
-						console.log("failed application_barangays", JSON.parse(res));
+						console.log("failed complain_barangays", JSON.parse(res));
 						setBarangays(JSON.parse(res));
 					}
 				});

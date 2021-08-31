@@ -1,4 +1,9 @@
-import { Redirect, Route } from "react-router-dom";
+import {
+	BrowserRouter as Router,
+	Route,
+	Switch,
+	Redirect,
+} from "react-router-dom";
 import {
 	IonApp,
 	IonIcon,
@@ -34,19 +39,32 @@ import "@ionic/react/css/display.css";
 
 /* Theme variables */
 import "./theme/variables.css";
-import Home from "./pages/Home/Home";
-import Application from "./pages/Application/Application";
-import Support from "./pages/Support/Support";
-import Others from "./pages/Others/Others";
-import Surveys from "./pages/Others/Surveys/Surveys";
+import HomePage from "./pages/Home/Home";
+import ApplicationPage from "./pages/Application/Application";
+import ComplainPage from "./pages/Complain/Complain";
 import "antd/dist/antd.css"; // or 'antd/dist/antd.less'
 import { QueryClient, QueryClientProvider } from "react-query";
-import Settings from "./pages/Others/Settings/Settings";
 const queryClient = new QueryClient();
 
 const App: React.FC = () => (
 	<QueryClientProvider client={queryClient}>
-		<IonApp>
+		<Router>
+			<Switch>
+				<Route exact path="/home" component={HomePage} />
+				<Route exact path="/application" component={ApplicationPage} />
+				<Route exact path="/complain" component={ComplainPage} />
+				<Route exact path="/">
+					<Redirect to="/home" />
+				</Route>
+			</Switch>
+		</Router>
+	</QueryClientProvider>
+);
+
+export default App;
+
+{
+	/* <IonApp>
 			<IonReactRouter>
 				<IonTabs>
 					<IonRouterOutlet>
@@ -56,8 +74,8 @@ const App: React.FC = () => (
 						<Route exact path="/application">
 							<Application />
 						</Route>
-						<Route exact path="/supports">
-							<Support />
+						<Route exact path="/complain">
+							<Complain />
 						</Route>
 						<Route exact path="/others/settings">
 							<Settings />
@@ -79,7 +97,7 @@ const App: React.FC = () => (
 						<IonTabButton tab="application" href="/application">
 							<IonIcon icon={createOutline} />
 						</IonTabButton>
-						<IonTabButton tab="support" href="/supports">
+						<IonTabButton tab="complain" href="/compain">
 							<IonIcon icon={helpCircleOutline} />
 						</IonTabButton>
 						<IonTabButton tab="others" href="/others">
@@ -88,8 +106,5 @@ const App: React.FC = () => (
 					</IonTabBar>
 				</IonTabs>
 			</IonReactRouter>
-		</IonApp>
-	</QueryClientProvider>
-);
-
-export default App;
+		</IonApp> */
+}
