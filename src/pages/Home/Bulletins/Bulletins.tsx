@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
-import { IonCard, useIonToast } from "@ionic/react";
+import { IonCard } from "@ionic/react";
 import { useQuery } from "react-query";
-import { Carousel } from "antd";
+import { Carousel, message } from "antd";
 import axios from "axios";
 import getStorage from "../../../providers/getStorage";
 import setStorage from "../../../providers/setStorage";
@@ -13,8 +13,6 @@ import getApiUrl from "../../../providers/getApiUrl";
 import getApiKey from "../../../providers/getApiKey";
 
 const Bulletins = () => {
-	const [present, dismiss] = useIonToast();
-
 	let history = useHistory();
 	const [mobileBulletins, setMobileBulletins] = useState([]);
 
@@ -40,25 +38,11 @@ const Bulletins = () => {
 						setStorage("bulletins", JSON.stringify(res.data));
 						setMobileBulletins(res.data);
 					} else {
-						present({
-							color: "danger",
-							position: "middle",
-							buttons: [{ text: "hide", handler: () => dismiss() }],
-							message: "Connected Failed",
-							onDidDismiss: () => console.log("dismissed"),
-							onWillDismiss: () => console.log("will dismiss"),
-						});
+						message.error("Connected Failed");
 					}
 				},
 				onError: (err) => {
-					present({
-						color: "danger",
-						position: "middle",
-						buttons: [{ text: "hide", handler: () => dismiss() }],
-						message: "Connected Failed",
-						onDidDismiss: () => console.log("dismissed"),
-						onWillDismiss: () => console.log("will dismiss"),
-					});
+					message.error("Connected Failed");
 
 					getStorage("bulletins").then((res: any) => {
 						if (res) {
@@ -112,7 +96,9 @@ const Bulletins = () => {
 
 	return (
 		<IonCard style={{ padding: "10px" }}>
-			<Carousel>{handleRenderContent()}</Carousel>
+			<Carousel autoplay effect="fade">
+				{handleRenderContent()}
+			</Carousel>
 		</IonCard>
 	);
 };

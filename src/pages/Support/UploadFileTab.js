@@ -38,7 +38,7 @@ const UploadFileTab = (props) => {
 			return error;
 		},
 		onChange(info) {
-			console.log("info", info);
+			// console.log("info", info);
 			setFileList(info.fileList);
 			setFileListPreview([]);
 			info.fileList.map((item) => {
@@ -58,8 +58,9 @@ const UploadFileTab = (props) => {
 	};
 
 	const handleProceed = () => {
+		console.log("fileList", fileList);
 		if (fileList && fileList.length !== 0) {
-			props.setDataPreview({ ...props.dataPreview, ...fileList });
+			props.setDataPreview({ ...props.dataPreview, fileList });
 			props.next();
 		} else {
 			confirm({
@@ -88,7 +89,7 @@ const UploadFileTab = (props) => {
 					<Card>
 						<Row gutter={12}>
 							{fileListPreview.map((item, index) => {
-								console.log("item, index", item, index);
+								// console.log("item, index", item, index);
 
 								if (item.type === "video/mp4") {
 									return (

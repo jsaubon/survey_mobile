@@ -122,7 +122,7 @@ const ComplainTab = (props) => {
 					data.append("barangay_id", values.barangay_id);
 				}
 
-				data.append("countFiles", values.fileList.length);
+				data.append("countFiles", props.dataPreview.fileList.length);
 
 				if (props.dataPreview.fileList.length !== 0) {
 					for (let i = 0; i < props.dataPreview.fileList.length; i++) {
@@ -158,11 +158,11 @@ const ComplainTab = (props) => {
 	useEffect(() => {
 		refetchDataBarangay();
 
-		getStorage("complainData").then((res) => {
-			if (res) {
-				props.setDataPreview(JSON.parse(res));
-			}
-		});
+		// getStorage("complainData").then((res) => {
+		// 	if (res) {
+		// 		props.setDataPreview(JSON.parse(res));
+		// 	}
+		// });
 	}, []);
 
 	return (

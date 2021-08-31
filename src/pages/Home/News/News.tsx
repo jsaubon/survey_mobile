@@ -11,7 +11,6 @@ import {
 	IonModal,
 	IonTitle,
 	IonToolbar,
-	useIonToast,
 } from "@ionic/react";
 import { useQuery } from "react-query";
 import axios from "axios";
@@ -22,10 +21,9 @@ import setStorage from "../../../providers/setStorage";
 // import noDataImage from "../../../assets/img/no-data.png";
 import getApiUrl from "../../../providers/getApiUrl";
 import getApiKey from "../../../providers/getApiKey";
+import { message } from "antd";
 
 const News = () => {
-	const [present, dismiss] = useIonToast();
-
 	const [mobileNews, setMobileNews] = useState([]);
 
 	let history = useHistory();
@@ -58,25 +56,12 @@ const News = () => {
 					setStorage("news_and_announcements", JSON.stringify(res.data));
 					setMobileNews(res.data);
 				} else {
-					present({
-						color: "danger",
-						position: "middle",
-						buttons: [{ text: "hide", handler: () => dismiss() }],
-						message: "Connected Failed",
-						onDidDismiss: () => console.log("dismissed"),
-						onWillDismiss: () => console.log("will dismiss"),
-					});
+					message.error("Connected Failed");
 				}
 			},
 			onError: (err) => {
-				present({
-					color: "danger",
-					position: "middle",
-					buttons: [{ text: "hide", handler: () => dismiss() }],
-					message: "Connected Failed",
-					onDidDismiss: () => console.log("dismissed"),
-					onWillDismiss: () => console.log("will dismiss"),
-				});
+				message.error("Connected Failed");
+
 				getStorage("news_and_announcements").then((res: any) => {
 					if (res) {
 						console.log("failed news_and_announcements", JSON.parse(res));
