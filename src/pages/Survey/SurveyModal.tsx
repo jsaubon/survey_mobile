@@ -19,10 +19,10 @@ import {
 import { QuestionCircleOutlined } from "@ant-design/icons";
 import { useMutation } from "react-query";
 import axios from "axios";
-import getStorage from "../../../providers/getStorage";
-import setStorage from "../../../providers/setStorage";
-import getApiUrl from "../../../providers/getApiUrl";
-import getApiKey from "../../../providers/getApiKey";
+import getStorage from "../../providers/getStorage";
+import setStorage from "../../providers/setStorage";
+import getApiUrl from "../../providers/getApiUrl";
+import getApiKey from "../../providers/getApiKey";
 interface surveyProps {
 	setShowSurveyModal: any;
 	showSurveyModal: any;

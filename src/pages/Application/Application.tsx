@@ -3,9 +3,10 @@ import {
 	IonHeader,
 	IonTitle,
 	IonToolbar,
-	IonApp,
 	IonCard,
 	IonPage,
+	IonBackButton,
+	IonButtons,
 } from "@ionic/react";
 
 import "./Application.css";
@@ -77,7 +78,10 @@ const Application = () => {
 		<IonPage>
 			<IonHeader>
 				<IonToolbar>
-					<IonTitle>Application Form</IonTitle>
+					<IonButtons slot="start">
+						<IonBackButton defaultHref="/" />
+					</IonButtons>
+					<IonTitle>DOST Application Form</IonTitle>
 				</IonToolbar>
 			</IonHeader>
 			<IonContent>

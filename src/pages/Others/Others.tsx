@@ -6,9 +6,8 @@ import {
 	IonPage,
 	IonTitle,
 	IonToolbar,
-	IonButton,
-	IonIcon,
 	IonCard,
+	IonBackButton,
 } from "@ionic/react";
 import { List } from "antd";
 import { Link, useHistory } from "react-router-dom";
@@ -20,22 +19,14 @@ const Others = () => {
 		<IonPage>
 			<IonHeader>
 				<IonToolbar>
-					<IonButtons slot="end">
-						<IonButton onClick={(e) => history.push("/others/settings")}>
-							<IonIcon icon={settingsOutline} />
-						</IonButton>
+					<IonButtons slot="start">
+						<IonBackButton defaultHref="/" />
 					</IonButtons>
 					<IonTitle>Others</IonTitle>
 				</IonToolbar>
 			</IonHeader>
 			<IonContent>
-				<IonCard style={{ padding: "10px" }}>
-					<List bordered>
-						<Link to="/others/surveys">
-							<List.Item>Surveys</List.Item>
-						</Link>
-					</List>
-				</IonCard>
+				<IonCard style={{ padding: "10px" }}>OTHERS</IonCard>
 			</IonContent>
 		</IonPage>
 	);
