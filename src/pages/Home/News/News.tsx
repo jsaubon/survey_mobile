@@ -33,7 +33,7 @@ const News = () => {
 	});
 
 	const {
-		data: dataMobileNewsAndAnnouncements,
+		// data: dataMobileNewsAndAnnouncements,
 		refetch: refetchDataMobileNewsAndAnnouncements,
 	} = useQuery(
 		"news_and_announcements",
@@ -94,7 +94,7 @@ const News = () => {
 			return (
 				<IonCard style={{ padding: "10px" }}>
 					<IonList>
-						{dataMobileNewsAndAnnouncements.data.map((news: any, key: any) => {
+						{mobileNews.map((news: any, key: any) => {
 							return (
 								<IonItem
 									key={key}

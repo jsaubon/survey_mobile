@@ -13,11 +13,7 @@ import {
 	Card,
 	Upload,
 } from "antd";
-import {
-	ExclamationCircleOutlined,
-	InboxOutlined,
-	RightOutlined,
-} from "@ant-design/icons";
+import { ExclamationCircleOutlined, InboxOutlined } from "@ant-design/icons";
 
 import axios from "axios";
 import { useMutation, useQuery } from "react-query";
@@ -36,11 +32,10 @@ function getBase64(file: any, callback: any) {
 }
 
 const ComplainForm = () => {
-	const [data, setData] = useState<any>([]);
 	const [dataFileList, setDataFileList] = useState<any>([]);
 	const [dataFileListPreview, setDataFileListPreview] = useState<any>([]);
 	const [form] = Form.useForm();
-	const [barangays, setBarangays] = useState<any>([]);
+	const [barangays, setBarangays] = useState([]);
 	let history = useHistory();
 
 	type Variables = {
@@ -110,33 +105,45 @@ const ComplainForm = () => {
 	);
 
 	const onFinish = (values: any) => {
-		setData({ ...data, ...values });
-
 		confirm({
 			title: "Do you want to submit these data?",
 			icon: <ExclamationCircleOutlined />,
 			content: "",
 			onOk() {
-				let formData = {
-					...values,
-					countFiles: dataFileList.length,
-					...dataFileList,
-				};
+				const newFormData = new FormData();
 
-				// formData.push({countFiles: dataFileList.length});
+				if (values && values.complaine) {
+					newFormData.append("complaine", values.complaine);
+				}
+				if (values && values.description) {
+					newFormData.append("description", values.description);
+				}
+				if (values && values.complainant_name) {
+					newFormData.append("complainant_name", values.complainant_name);
+				}
+				if (values && values.contact_no) {
+					newFormData.append("contact_no", values.contact_no);
+				}
+				if (values && values.email_address) {
+					newFormData.append("email_address", values.email_address);
+				}
+				if (values && values.barangay_id) {
+					newFormData.append("barangay_id", values.barangay_id);
+				}
 
-				// if (dataFileList.length !== 0) {
-				// 	for (let i = 0; i < dataFileList.length; i++) {
-				// 		const el = dataFileList[i];
-				// 		formData.append("files_" + i, el.originFileObj, el.name);
-				//         formData.push({files_+i: el.originFileObj});
-				// 	}
-				// }
+				newFormData.append("countFiles", dataFileList.length);
 
 				if (dataFileList.length !== 0) {
-					setStorage("complainData", JSON.stringify(formData));
+					for (let i = 0; i < dataFileList.length; i++) {
+						const el = dataFileList[i];
+						newFormData.append("files_" + i, el.originFileObj, el.name);
+					}
+				}
 
-					mutateCreateComplain(formData, {
+				if (dataFileList.length !== 0) {
+					setStorage("complainData", JSON.stringify(newFormData));
+
+					mutateCreateComplain(newFormData, {
 						onSuccess: (res) => {
 							if (res.success) {
 								message.success("Send successfully!");
@@ -147,7 +154,7 @@ const ComplainForm = () => {
 						onError: (err: any) => {
 							message.error(err);
 							console.log("err", err);
-							setStorage("complainData", JSON.stringify(data));
+							setStorage("complainData", JSON.stringify(newFormData));
 						},
 					});
 				} else {
@@ -175,7 +182,7 @@ const ComplainForm = () => {
 		showUploadList: false,
 		beforeUpload(file: any) {
 			let error;
-
+			error = false;
 			const isValid =
 				file.type === "image/jpeg" ||
 				file.type === "image/png" ||
@@ -212,8 +219,6 @@ const ComplainForm = () => {
 					<Card>
 						<Row gutter={12}>
 							{dataFileListPreview.map((item: any, index: any) => {
-								// console.log("item, index", item, index);
-
 								if (item.type === "video/mp4") {
 									return (
 										<Col span={12} key={index}>
@@ -272,7 +277,7 @@ const ComplainForm = () => {
 				</Col>
 				<Col className="gutter-row" xs={24} sm={12}>
 					<Form.Item
-						name="complain"
+						name="complaine"
 						label="Complain"
 						rules={[
 							{
@@ -336,7 +341,7 @@ const ComplainForm = () => {
 							}
 						>
 							{barangays &&
-								barangays.map((barangay: any, key: any) => {
+								barangays.map((barangay: any, key) => {
 									let option = `${barangay.barangay}, ${barangay.city.city}, ${barangay.province.province}`;
 									return (
 										<Select.Option

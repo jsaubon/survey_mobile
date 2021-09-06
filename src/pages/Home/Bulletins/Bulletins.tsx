@@ -16,43 +16,42 @@ const Bulletins = () => {
 	let history = useHistory();
 	const [mobileBulletins, setMobileBulletins] = useState([]);
 
-	const { data: dataMobileBulletins, refetch: refetchDataMobileBulletins } =
-		useQuery(
-			"bulletins",
-			() =>
-				axios
-					.get(`${getApiUrl()}/api/mobile/mobile_bulletin`, {
-						headers: {
-							Authorization: getApiKey(),
-						},
-					})
-					.then((res) => res.data),
-			{
-				enabled: false,
-				retry: 1,
-				retryDelay: 500,
-				refetchOnWindowFocus: false,
-				onSuccess: (res) => {
-					console.log("res", res);
-					if (res.success) {
-						setStorage("bulletins", JSON.stringify(res.data));
-						setMobileBulletins(res.data);
-					} else {
-						message.error("Connected Failed");
-					}
-				},
-				onError: (err) => {
+	const { refetch: refetchDataMobileBulletins } = useQuery(
+		"bulletins",
+		() =>
+			axios
+				.get(`${getApiUrl()}/api/mobile/mobile_bulletin`, {
+					headers: {
+						Authorization: getApiKey(),
+					},
+				})
+				.then((res) => res.data),
+		{
+			enabled: false,
+			retry: 1,
+			retryDelay: 500,
+			refetchOnWindowFocus: false,
+			onSuccess: (res) => {
+				console.log("res", res);
+				if (res.success) {
+					setStorage("bulletins", JSON.stringify(res.data));
+					setMobileBulletins(res.data);
+				} else {
 					message.error("Connected Failed");
+				}
+			},
+			onError: (err) => {
+				message.error("Connected Failed");
 
-					getStorage("bulletins").then((res: any) => {
-						if (res) {
-							console.log("failed bulletins", JSON.parse(res));
-							setMobileBulletins(JSON.parse(res));
-						}
-					});
-				},
-			}
-		);
+				getStorage("bulletins").then((res: any) => {
+					if (res) {
+						console.log("failed bulletins", JSON.parse(res));
+						setMobileBulletins(JSON.parse(res));
+					}
+				});
+			},
+		}
+	);
 
 	useEffect(() => {
 		refetchDataMobileBulletins();
@@ -69,38 +68,34 @@ const Bulletins = () => {
 
 	const handleRenderContent = () => {
 		if (mobileBulletins.length !== 0) {
-			return dataMobileBulletins.data
-				.filter(
-					(p: any) =>
-						moment(p.date_start).unix() <= moment().unix() &&
-						moment(p.date_end).unix() >= moment().unix()
-				)
-				.map((bulletin: any, bulletin_key: any) => {
-					return (
-						<div key={bulletin_key}>
-							<img
-								alt={bulletin.image_path}
-								src={getApiUrl() + "/" + bulletin.image_path}
-							/>
-						</div>
-					);
-				});
-		} else {
 			return (
-				<div>
-					<img alt="PCIEERD" src={PCIEERDImage} style={{ width: "100%" }} />
-				</div>
+				<IonCard style={{ padding: "10px" }}>
+					<Carousel autoplay effect="fade">
+						{mobileBulletins
+							.filter(
+								(p: any) =>
+									moment(p.date_start).unix() <= moment().unix() &&
+									moment(p.date_end).unix() >= moment().unix()
+							)
+							.map((bulletin: any, bulletin_key: any) => {
+								return (
+									<div key={bulletin_key}>
+										<img
+											alt={bulletin.image_path}
+											src={getApiUrl() + "/" + bulletin.image_path}
+										/>
+									</div>
+								);
+							})}
+					</Carousel>
+				</IonCard>
 			);
+		} else {
+			return "";
 		}
 	};
 
-	return (
-		<IonCard style={{ padding: "10px" }}>
-			<Carousel autoplay effect="fade">
-				{handleRenderContent()}
-			</Carousel>
-		</IonCard>
-	);
+	return handleRenderContent();
 };
 
 export default Bulletins;
