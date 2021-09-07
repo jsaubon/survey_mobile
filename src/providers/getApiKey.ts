@@ -1,4 +1,4 @@
 export default function getApiKey() {
-	let apiKey = "axKV8dZ6fACOlFjD44i9rPpyuBUXuOUq1av3bhqIBPTKCvRCFS7OwIlIQ3VJ";
+	let apiKey = "123";
 	return apiKey;
 }

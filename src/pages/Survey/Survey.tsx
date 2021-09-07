@@ -143,12 +143,11 @@ const Survey = () => {
 					(p) => p.form_type_id != form_type_id
 				);
 				console.log("_pendingSubmissions", _pendingSubmissions);
-				setStorage(
-					"pending_submissions",
-					JSON.stringify(_pendingSubmissions)
-				).then((res) => {
-					getPendingSubmissions();
-				});
+				setStorage("pending_submissions", JSON.stringify(_pendingSubmissions)).then(
+					(res) => {
+						getPendingSubmissions();
+					}
+				);
 			},
 			onError: (err) => {
 				message.error("Connection Failed");
@@ -194,9 +193,8 @@ const Survey = () => {
 								>
 									Pending Submissions (
 									{
-										pendingSubmissions.filter(
-											(p: any) => p.form_type_id == survey.id
-										).length
+										pendingSubmissions.filter((p: any) => p.form_type_id == survey.id)
+											.length
 									}
 									)
 								</Button>
@@ -217,9 +215,9 @@ const Survey = () => {
 		<IonPage>
 			<IonHeader>
 				<IonToolbar>
-					<IonButtons slot="start">
+					{/* <IonButtons slot="start">
 						<IonBackButton defaultHref="/" />
-					</IonButtons>
+					</IonButtons> */}
 					<IonTitle>Surveys</IonTitle>
 				</IonToolbar>
 			</IonHeader>

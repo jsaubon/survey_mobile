@@ -38,13 +38,13 @@ const App: React.FC = () => (
 	<QueryClientProvider client={queryClient}>
 		<Router>
 			<Switch>
-				<Route exact path="/home" component={HomePage} />
+				{/* <Route exact path="/home" component={HomePage} />
 				<Route exact path="/application" component={ApplicationPage} />
-				<Route exact path="/complain" component={ComplainPage} />
+				<Route exact path="/complain" component={ComplainPage} /> */}
 				<Route exact path="/survey" component={SurveyPage} />
-				<Route exact path="/others" component={OthersPage} />
+				{/* <Route exact path="/others" component={OthersPage} /> */}
 				<Route exact path="/">
-					<Redirect to="/home" />
+					<Redirect to="/survey" />
 				</Route>
 			</Switch>
 		</Router>
